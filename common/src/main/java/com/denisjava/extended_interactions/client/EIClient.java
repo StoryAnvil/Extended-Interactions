@@ -16,11 +16,18 @@ import org.lwjgl.glfw.GLFW;
 import static com.denisjava.extended_interactions.EICommon.id;
 
 public class EIClient {
-    public static final KeyMapping.Category KEYMAPPING_CATEGORY = KeyMapping.Category.register(id("main"));
+    //? if >=1.21.11 {
+    /*public static final KeyMapping.Category KEYMAPPING_CATEGORY = KeyMapping.Category.register(id("main"));
     public static final Lazy<KeyMapping> OPEN_RADIAL = new Lazy<>(() -> new KeyMapping(
             "key.extended_interactions.open_radial", InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_TAB, KEYMAPPING_CATEGORY
     ));
+     *///?} else {
+    public static final Lazy<KeyMapping> OPEN_RADIAL = new Lazy<>(() -> new KeyMapping(
+            "key.extended_interactions.open_radial", InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_TAB, "key.category.extended_interactions.main"
+    ));
+    //?}
 
     public static void init() {}
 
@@ -28,6 +35,10 @@ public class EIClient {
         registrar.registerS2CHandler(MenuResultPacket.TYPE, EIClient::handleMenuResult);
     }
 
+    /**
+     * Handles server's update of radial menu actions.<br>
+     * This is used to replace client prediction of radial menu
+     */
     private static void handleMenuResult(MenuResultPacket packet) {
         if (Minecraft.getInstance().screen instanceof RadialMenuScreen screen) {
             screen.handleMenuResult(packet);

@@ -15,7 +15,7 @@ public class EIProviderRegistry<SUBJECT, PROVIDER> {
     public void register(SUBJECT subject, PROVIDER provider) {
         if (frozen) throw new IllegalStateException("EIProviderRegistry is frozen already! You are registering providers too late.");
 
-        ArrayList<PROVIDER> providers = data.computeIfAbsent(subject, _ -> new ArrayList<>(1));
+        ArrayList<PROVIDER> providers = data.computeIfAbsent(subject, u -> new ArrayList<>(1));
         providers.add(provider);
     }
 

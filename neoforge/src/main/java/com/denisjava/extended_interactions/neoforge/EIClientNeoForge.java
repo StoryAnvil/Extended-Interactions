@@ -11,8 +11,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent;
-
 import java.util.function.Consumer;
 
 @Mod(value = EICommon.MOD_ID, dist = Dist.CLIENT)
@@ -29,17 +27,20 @@ public class EIClientNeoForge {
 
     @SubscribeEvent
     public static void registerKeymappings(RegisterKeyMappingsEvent event) {
+        //? if >=1.21.11
         //event.registerCategory(EIClient.KEYMAPPING_CATEGORY);
         event.register(EIClient.OPEN_RADIAL.get());
     }
 
-    @SubscribeEvent
-    public static void registerClientPayloadHandlers(RegisterClientPayloadHandlersEvent event) {
+    //? if >=1.21.11 {
+    /*@SubscribeEvent
+    public static void registerClientPayloadHandlers(net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent event) {
         EIClient.registerPayloadHandlers(new EIPlatform.ClientNetworkRegistrar() {
             @Override
             public <T extends CustomPacketPayload> void registerS2CHandler(CustomPacketPayload.Type<T> type, Consumer<T> listener) {
-                event.register(type, (t, _) -> listener.accept(t));
+                event.register(type, (t, u) -> listener.accept(t));
             }
         });
     }
+    *///?}
 }

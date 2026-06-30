@@ -1,10 +1,10 @@
 package com.denisjava.extended_interactions.api;
 
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public abstract class JavaInteraction extends ExtInteraction {
-    public JavaInteraction(Identifier id, ExtInteractionIcon icon, EIPlugin declaringPlugin) {
+    public JavaInteraction(ResourceLocation id, ExtInteractionIcon icon, EIPlugin declaringPlugin) {
         super(id, icon, declaringPlugin);
     }
 

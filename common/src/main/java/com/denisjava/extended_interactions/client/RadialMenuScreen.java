@@ -11,7 +11,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class RadialMenuScreen extends Screen {
     }
 
     @Override
-    public void render(@NonNull GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         int centerX = g.guiWidth() / 2;
         int centerY = g.guiHeight() / 2;
         final int radius = 48;
@@ -62,10 +62,12 @@ public class RadialMenuScreen extends Screen {
         EICommon.getPlatform().sendToServer(target.createRequest());
     }
 
-    @Override
+    //? if >=1.21.11 {
+    /*@Override
     public boolean isInGameUi() {
         return true;
     }
+    *///?}
 
     @Override
     public boolean isPauseScreen() {

@@ -16,7 +16,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -31,12 +31,12 @@ import java.util.List;
 import java.util.Optional;
 
 public class ExtendedInteractionsImpl {
-    private static final EIProviderRegistry<Identifier, EIBlockProvider> BLOCK_PROVIDERS = new EIProviderRegistry<>();
-    private static final EIProviderRegistry<Identifier, EIEntityProvider> ENTITY_PROVIDERS = new EIProviderRegistry<>();
-    private static final HashMap<Identifier, ExtInteraction> INTERACTIONS = new HashMap<>();
+    private static final EIProviderRegistry<ResourceLocation, EIBlockProvider> BLOCK_PROVIDERS = new EIProviderRegistry<>();
+    private static final EIProviderRegistry<ResourceLocation, EIEntityProvider> ENTITY_PROVIDERS = new EIProviderRegistry<>();
+    private static final HashMap<ResourceLocation, ExtInteraction> INTERACTIONS = new HashMap<>();
     private static boolean frozen = false;
 
-    public static final StreamCodec<ByteBuf, ExtInteraction> INTERACTION_STREAM_CODEC = Identifier.STREAM_CODEC.map(identifier -> {
+    public static final StreamCodec<ByteBuf, ExtInteraction> INTERACTION_STREAM_CODEC = ResourceLocation.STREAM_CODEC.map(identifier -> {
         ExtInteraction interaction = INTERACTIONS.get(identifier);
         if (interaction == null) throw new RuntimeException("Failed to decode interaction with id [" + identifier + "]. Maybe it does not exist on client?");
         return interaction;
@@ -48,10 +48,10 @@ public class ExtendedInteractionsImpl {
             EIResultImpl.Failed::new
     );
 
-    public static void registerProvider(Identifier subject, EIBlockProvider provider) {
+    public static void registerProvider(ResourceLocation subject, EIBlockProvider provider) {
         BLOCK_PROVIDERS.register(subject, provider);
     }
-    public static void registerProvider(Identifier subject, EIEntityProvider provider) {
+    public static void registerProvider(ResourceLocation subject, EIEntityProvider provider) {
         ENTITY_PROVIDERS.register(subject, provider);
     }
     public static void registerInteraction(ExtInteraction interaction) {
@@ -74,7 +74,10 @@ public class ExtendedInteractionsImpl {
 
         Optional<ResourceKey<Block>> optionalKey = BuiltInRegistries.BLOCK.getResourceKey(state.getBlock());
         if (optionalKey.isEmpty()) throw new AssertionError("BlockState with unregistered block? Nah. I'm dealing with this");
-        Identifier key = optionalKey.get().identifier();
+        //? if >=1.21.11 {
+        /*ResourceLocation key = optionalKey.get().identifier();
+        *///?} else
+        ResourceLocation key = optionalKey.get().location();
 
         for (EIBlockProvider provider : BLOCK_PROVIDERS.listAll(key)) {
             collector.offer(provider.collectForBlock(level, player, pos, state));
@@ -89,7 +92,10 @@ public class ExtendedInteractionsImpl {
 
         Optional<ResourceKey<EntityType<?>>> optionalKey = BuiltInRegistries.ENTITY_TYPE.getResourceKey(entity.getType());
         if (optionalKey.isEmpty()) throw new AssertionError("BlockState with unregistered entity type? Nah. I'm dealing with this");
-        Identifier key = optionalKey.get().identifier();
+        //? if >=1.21.11 {
+        /*ResourceLocation key = optionalKey.get().identifier();
+        *///?} else
+        ResourceLocation key = optionalKey.get().location();
 
         for (EIEntityProvider provider : ENTITY_PROVIDERS.listAll(key)) {
             collector.offer(provider.collectForEntity(level, player, entity));

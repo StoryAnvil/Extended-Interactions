@@ -23,6 +23,6 @@ public class EIClientFabric implements ClientModInitializer, EIPlatform.ClientNe
 
     @Override
     public <T extends CustomPacketPayload> void registerS2CHandler(CustomPacketPayload.Type<T> type, Consumer<T> listener) {
-        ClientPlayNetworking.registerGlobalReceiver(type, (payload, _) -> listener.accept(payload));
+        ClientPlayNetworking.registerGlobalReceiver(type, (payload, u) -> listener.accept(payload));
     }
 }

@@ -15,7 +15,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.permissions.Permissions;
+//? if >=1.21.11
+//import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.entity.Entity;
 
 import java.util.Collection;
@@ -27,7 +28,10 @@ import static net.minecraft.commands.Commands.literal;
 public class EICommands {
     public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, Commands.CommandSelection commandSelection) {
         dispatcher.register(literal("extended_interactions")
-                .requires(css -> css.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+                //? if >=1.21.11 {
+                /*.requires(css -> css.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+                *///?} else
+                .requires(css -> css.hasPermission(2))
 
                 .then(literal("listResults")
                         .then(literal("block").then(argument("pos", BlockPosArgument.blockPos()).executes(EICommands::listBlock)))

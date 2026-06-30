@@ -8,6 +8,9 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+/**
+ * Platform-implemented interface.
+ */
 public interface EIPlatform {
     boolean isModLoaded(String id);
     void sendToServer(CustomPacketPayload payload);

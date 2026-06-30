@@ -3,7 +3,7 @@ package com.denisjava.extended_interactions.api;
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -12,17 +12,17 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.NonExtendable
 public abstract class ExtInteraction {
-    protected final Identifier id;
+    protected final ResourceLocation id;
     protected final ExtInteractionIcon icon;
     protected final EIPlugin declaringPlugin;
 
-    protected ExtInteraction(Identifier id, ExtInteractionIcon icon, EIPlugin declaringPlugin) {
+    protected ExtInteraction(ResourceLocation id, ExtInteractionIcon icon, EIPlugin declaringPlugin) {
         this.id = id;
         this.icon = icon;
         this.declaringPlugin = declaringPlugin;
     }
 
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return id;
     }
 
@@ -35,7 +35,7 @@ public abstract class ExtInteraction {
     }
 
     /**
-     * Subclass {@link JavaInteraction} instead of {@link ExtInteraction}
+     * Subclass {@link JavaInteraction} instead of {@link ExtInteraction}!
      */
     abstract void _totally_not_sus_method_preventing_bad_subclasses_();
 }

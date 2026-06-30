@@ -10,6 +10,9 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 
+/**
+ * Helper for {@link com.denisjava.extended_interactions.client.RadialMenuScreen}'s networking
+ */
 public abstract class MenuTarget {
     public abstract CustomPacketPayload createRequest();
     public abstract Pair<List<EIResultImpl.Successful>, List<EIResultImpl.Failed>> collectClientSide(Player player);
