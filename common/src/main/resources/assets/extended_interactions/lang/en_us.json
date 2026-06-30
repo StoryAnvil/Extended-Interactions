@@ -1,0 +1,11 @@
+{
+    "key.category.extended_interactions.main": "Extended Interactions",
+    "debug.extended_interactions.success": "§aHIT %s",
+    "debug.extended_interactions.silent_failure": "§8SILENT %s",
+    "debug.extended_interactions.failure": "§cMISS %s : %s",
+    "debug.extended_interactions.no_results": "§7No results",
+    "debug.extended_interactions.results": "Results (%s total):",
+    "key.extended_interactions.open_radial": "Open radial menu",
+    "extinter.extended_interactions.debug1": "First Debug Action",
+    "extinter.extended_interactions.debug2": "Unpredictable Debug Action"
+}

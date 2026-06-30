@@ -1,0 +1,32 @@
+{
+    "schemaVersion": 1,
+    "id": "${modId}",
+    "version": "${modVersion}",
+    "name": "${modName}",
+    "icon": "${modId}.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "com.denisjava.extended_interactions.fabric.EIFabric"
+        ],
+        "client": [
+            "com.denisjava.extended_interactions.fabric.EIClientFabric"
+        ],
+        "extended_interactions": [
+            "com.denisjava.extended_interactions.compat.MinecraftInteractions"
+        ]
+    },
+    "contact": {
+        "homepage": "${modURL}"
+    },
+    "mixins": [
+        "extended_interactions.mixins.json",
+        "extended_interactions.fabric.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": "${fabricLoaderVersionRange}",
+        "minecraft": "${minecraftVersion}",
+        "java": ">=${javaVersion}",
+        "fabric-api": "${fabricAPIVersionRange}"
+    }
+}
