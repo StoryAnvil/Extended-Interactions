@@ -10,6 +10,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,12 +19,14 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforgespi.language.IModFileInfo;
 
+import java.io.File;
 import java.lang.annotation.ElementType;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +56,11 @@ public class EINeoForge implements EIPlatform {
     @Override
     public void sendToClient(ServerPlayer player, CustomPacketPayload payload) {
         PacketDistributor.sendToPlayer(player, payload);
+    }
+
+    @Override
+    public File getConfigDir() {
+        return FMLPaths.CONFIGDIR.get().toFile();
     }
 
     @SubscribeEvent

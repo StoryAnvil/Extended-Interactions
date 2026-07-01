@@ -2,6 +2,7 @@ package com.denisjava.extended_interactions.impl;
 
 import com.denisjava.extended_interactions.network.BlockMenuRequestPacket;
 import com.denisjava.extended_interactions.network.EntityMenuRequestPacket;
+import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -11,16 +12,27 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 
 /**
- * Helper for {@link com.denisjava.extended_interactions.client.RadialMenuScreen}'s networking
+ * {@link com.denisjava.extended_interactions.api.ExtInteraction}'s target.<br>
+ * Separated in subclasses by target type. See {@link BlockTarget}, {@link EntityTarget}
  */
 public abstract class MenuTarget {
+    /**
+     * Helper for {@link com.denisjava.extended_interactions.client.RadialMenuScreen}
+     */
     public abstract CustomPacketPayload createRequest();
+
+    /**
+     * Helper for {@link com.denisjava.extended_interactions.client.RadialMenuScreen}.<br>
+     * Returns client predicated list of interactions
+     */
     public abstract Pair<List<EIResultImpl.Successful>, List<EIResultImpl.Failed>> collectClientSide(Player player);
+
+    public abstract Either<BlockPos, Integer> getEither();
 
     public static class BlockTarget extends MenuTarget {
         private final Level level;
-        private final BlockPos pos;
 
+        private final BlockPos pos;
         public BlockTarget(Level level, BlockPos pos) {
             this.level = level;
             this.pos = pos;
@@ -35,6 +47,19 @@ public abstract class MenuTarget {
         public Pair<List<EIResultImpl.Successful>, List<EIResultImpl.Failed>> collectClientSide(Player player) {
             return ExtendedInteractionsImpl.sort(ExtendedInteractionsImpl.collectForBlock(level, player, pos));
         }
+
+        @Override
+        public Either<BlockPos, Integer> getEither() {
+            return Either.left(pos);
+        }
+
+        public BlockPos getPos() {
+            return pos;
+        }
+
+        public Level getLevel() {
+            return level;
+        }
     }
 
     public static class EntityTarget extends MenuTarget {
@@ -42,6 +67,10 @@ public abstract class MenuTarget {
 
         public EntityTarget(int entityId) {
             this.entityId = entityId;
+        }
+
+        public int getEntityId() {
+            return entityId;
         }
 
         @Override
@@ -52,6 +81,11 @@ public abstract class MenuTarget {
         @Override
         public Pair<List<EIResultImpl.Successful>, List<EIResultImpl.Failed>> collectClientSide(Player player) {
             return ExtendedInteractionsImpl.sort(ExtendedInteractionsImpl.collectForEntity(player.level(), player, player.level().getEntity(entityId)));
+        }
+
+        @Override
+        public Either<BlockPos, Integer> getEither() {
+            return Either.right(entityId);
         }
     }
 }

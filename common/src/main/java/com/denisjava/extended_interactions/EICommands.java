@@ -6,6 +6,7 @@ import com.denisjava.extended_interactions.impl.ExtendedInteractionsImpl;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -54,7 +55,7 @@ public class EICommands {
         return 0;
     }
 
-    private static void listResults(CommandContext<CommandSourceStack> ctx, Collection<EIResultImpl.Result> results) {
+    public static void listResults(CommandContext<CommandSourceStack> ctx, Collection<EIResultImpl.Result> results) {
         if (results.isEmpty()) {
             ctx.getSource().sendSystemMessage(Component.translatable("debug.extended_interactions.no_results"));
             return;
@@ -63,7 +64,8 @@ public class EICommands {
         for (EIResultImpl.Result result : results) {
             MutableComponent component = null;
             if (result instanceof EIResultImpl.Successful success) {
-                component = Component.translatable("debug.extended_interactions.success", success.interaction.getId().toString());
+                component = Component.translatable("debug.extended_interactions.success", success.interaction.getId().toString(),
+                        success.iconOverride == null ? Component.literal("default").withStyle(ChatFormatting.GRAY) : success.iconOverride);
             }
             if (result instanceof EIResultImpl.SilentlyFailed sf) {
                 component = Component.translatable("debug.extended_interactions.silent_failure", sf.interaction.getId().toString());

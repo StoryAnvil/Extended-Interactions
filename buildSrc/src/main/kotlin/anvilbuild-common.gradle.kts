@@ -49,6 +49,12 @@ repositories {
         name = "KikuGie Snapshots"
         url = uri("https://maven.kikugie.dev/snapshots")
     }
+    maven("https://maven.isxander.dev/releases") {
+        name = "Xander Maven"
+        content {
+            includeGroup("dev.isxander")
+        }
+    }
 }
 
 tasks {

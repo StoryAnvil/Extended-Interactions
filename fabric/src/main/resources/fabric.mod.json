@@ -14,6 +14,9 @@
         ],
         "extended_interactions": [
             "com.denisjava.extended_interactions.compat.MinecraftInteractions"
+        ],
+        "modmenu": [
+            "com.denisjava.extended_interactions.fabric.ModMenuCompat"
         ]
     },
     "contact": {
@@ -27,6 +30,7 @@
         "fabricloader": "${fabricLoaderVersionRange}",
         "minecraft": "${minecraftVersion}",
         "java": ">=${javaVersion}",
-        "fabric-api": "${fabricAPIVersionRange}"
+        "fabric-api": "${fabricAPIVersionRange}",
+        "yet_another_config_lib_v3": "*"
     }
 }

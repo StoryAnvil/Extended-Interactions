@@ -1,11 +1,26 @@
 {
+    "extended_interactions.config": "Extended Interaction Client Configuration",
+    "extended_interactions.client_func": "Client",
+    "extended_interactions.client_func.tooltip": "Configure how EI functions on client",
+    "extended_interactions.client_predict": "Predict interaction list",
+    "extended_interactions.client_predict.help": "When radial menu is opened, server needs to return list of actions for the radial menu. Network latency will cause this to take some time. If this is enabled, client will predict list of actions and replace them when server replies instead of waiting.",
+    "extended_interactions.client_prefire": "Allow picking predicted results",
+    "extended_interactions.client_prefire.help": "Allows picking interaction predicted by client in radial menu before server replies with actual list. This might help if network latency is significant, but may cause issues if server's interaction list does not match.",
+    "extended_interactions.radial_bind": "Open radial menu",
+    "extended_interactions.radial_bind.help": "Keybind to open radial menu.",
+    "extended_interactions.binds": "Key binds",
+    "extended_interactions.bind.help": "§cUse minecraft's control options to change",
+    "extended_interactions.client_vis": "Client Visuals",
+    "extended_interactions.client_vis.tooltip": "Configure EI's visuals",
+    "extended_interactions.plugin": "Options for \"%s\" plugin",
     "key.category.extended_interactions.main": "Extended Interactions",
-    "debug.extended_interactions.success": "§aHIT %s",
+    "debug.extended_interactions.success": "§aHIT %s : icon=%s",
     "debug.extended_interactions.silent_failure": "§8SILENT %s",
     "debug.extended_interactions.failure": "§cMISS %s : %s",
     "debug.extended_interactions.no_results": "§7No results",
     "debug.extended_interactions.results": "Results (%s total):",
     "key.extended_interactions.open_radial": "Open radial menu",
     "extinter.extended_interactions.debug1": "First Debug Action",
-    "extinter.extended_interactions.debug2": "Unpredictable Debug Action"
+    "extinter.extended_interactions.debug2": "Unpredictable Debug Action",
+    "ei_plugin.extended_interactions.minecraft": "Minecraft Interactions"
 }

@@ -2,12 +2,15 @@ package com.denisjava.extended_interactions.client;
 
 import com.denisjava.extended_interactions.EICommon;
 import com.denisjava.extended_interactions.EIPlatform;
+import com.denisjava.extended_interactions.config.EIClientConfig;
 import com.denisjava.extended_interactions.impl.MenuTarget;
 import com.denisjava.extended_interactions.network.MenuResultPacket;
 import com.denisjava.extended_interactions.util.Lazy;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -29,7 +32,9 @@ public class EIClient {
     ));
     //?}
 
-    public static void init() {}
+    public static void init() {
+        EIClientConfig.HANDLER.load();
+    }
 
     public static void registerPayloadHandlers(EIPlatform.ClientNetworkRegistrar registrar) {
         registrar.registerS2CHandler(MenuResultPacket.TYPE, EIClient::handleMenuResult);
@@ -59,5 +64,10 @@ public class EIClient {
                 minecraft.setScreen(new RadialMenuScreen(target));
             }
         }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static void scheduleClient(Runnable runnable) {
+        Minecraft.getInstance().submit(runnable);
     }
 }

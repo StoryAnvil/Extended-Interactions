@@ -3,17 +3,22 @@ package com.denisjava.extended_interactions.compat;
 import com.denisjava.extended_interactions.EICommon;
 import com.denisjava.extended_interactions.api.*;
 import com.denisjava.extended_interactions.impl.EIResultImpl;
+import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
+import dev.isxander.yacl3.api.LabelOption;
+import dev.isxander.yacl3.api.Option;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 @EIPluginClass
 public class MinecraftInteractions implements EIPlugin {
-    private final DebugInteraction DEBUG1 = new DebugInteraction(EICommon.id("debug1"), this);
-    private final DebugInteraction DEBUG2 = new DebugInteraction(EICommon.id("debug2"), this);
+    private final DebugInteraction DEBUG1 = new DebugInteraction(EICommon.id("debug1"), new ExtInteractionIcon.ItemStackIcon(Items.DIAMOND), this);
+    private final DebugInteraction DEBUG2 = new DebugInteraction(EICommon.id("debug2"), new ExtInteractionIcon.ItemStackIcon(Items.BONE), this);
 
     @Override
     public void registerInteractions(InteractionRegistrar registrar) {
@@ -44,7 +49,17 @@ public class MinecraftInteractions implements EIPlugin {
     }
 
     @Override
+    public void createClientYACLConfigs(EIYACLConfigFactory factory) {
+        factory.create().option(LabelOption.create(Component.literal("config api test")));
+    }
+
+    @Override
     public String getDeclaringModId() {
         return EICommon.MOD_ID;
+    }
+
+    @Override
+    public ResourceLocation getUID() {
+        return EICommon.id("minecraft");
     }
 }

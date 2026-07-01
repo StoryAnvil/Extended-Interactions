@@ -32,3 +32,10 @@ type = "required"
 versionRange = "${minecraftVersionRange}"
 ordering = "NONE"
 side = "BOTH"
+
+[[dependencies.${modId}]]
+modId = "yet_another_config_lib_v3"
+type = "required"
+versionRange = "[1.0.0,)"
+ordering = "NONE"
+side = "BOTH"

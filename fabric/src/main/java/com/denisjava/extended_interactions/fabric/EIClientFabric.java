@@ -14,9 +14,7 @@ public class EIClientFabric implements ClientModInitializer, EIPlatform.ClientNe
     @Override
     public void onInitializeClient() {
         EIClient.init();
-
         KeyBindingHelper.registerKeyBinding(EIClient.OPEN_RADIAL.get());
-
         ClientTickEvents.END_CLIENT_TICK.register(EIClient::clientTick);
         EIClient.registerPayloadHandlers(this);
     }

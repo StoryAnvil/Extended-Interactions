@@ -20,6 +20,8 @@ dependencies {
 
     modImplementation("net.fabricmc:fabric-loader:${commonMod.prop("fabricLoaderVersion")}")
     modApi("net.fabricmc.fabric-api:fabric-api:${commonMod.prop("fabricAPIVersion")}+${commonMod.minecraftVersion}")
+    modImplementation("dev.isxander:yet-another-config-lib:${commonMod.prop("yaclVersion")}+${commonMod.minecraftVersion}-fabric")
+    modImplementation("maven.modrinth:mOgUt4GM:${commonMod.prop("modmenuVersionID")}")
 }
 
 loom {

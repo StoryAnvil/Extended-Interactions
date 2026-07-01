@@ -4,6 +4,7 @@ import com.denisjava.extended_interactions.impl.ExtendedInteractionsImpl;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
 
@@ -21,9 +22,9 @@ public final class ExtendedInteractions {
         if (holder.unwrapKey().isEmpty())
             throw new IllegalArgumentException("Provided block is not yet registered! Register it to minecraft registry before registering extended interactions to it");
         //? if >=1.21.11 {
-        /*ExtendedInteractionsImpl.registerProvider(holder.unwrapKey().get().identifier(), provider);
+        /*ExtendedInteractionsImpl.BLOCK_PROVIDERS.register(holder.unwrapKey().get().identifier(), provider);
         *///?} else
-        ExtendedInteractionsImpl.registerProvider(holder.unwrapKey().get().location(), provider);
+        ExtendedInteractionsImpl.BLOCK_PROVIDERS.register(holder.unwrapKey().get().location(), provider);
         //</editor-fold>
     }
     /**
@@ -38,9 +39,21 @@ public final class ExtendedInteractions {
         if (key.isEmpty())
             throw new IllegalArgumentException("Provided block is not yet registered! Register it to minecraft registry before registering extended interactions to it");
         //? if >=1.21.11 {
-        /*ExtendedInteractionsImpl.registerProvider(key.get().identifier(), provider);
+        /*ExtendedInteractionsImpl.BLOCK_PROVIDERS.register(key.get().identifier(), provider);
         *///?} else
-        ExtendedInteractionsImpl.registerProvider(key.get().location(), provider);
+        ExtendedInteractionsImpl.BLOCK_PROVIDERS.register(key.get().location(), provider);
+        //</editor-fold>
+    }
+
+    /**
+     * Registers block interaction provider to block tag.<br>
+     * This must be done during {@link EIPlugin#registerProviders()} or exception will be thrown!
+     * @param tag Tag to register provider for
+     * @param provider Block provider to register
+     */
+    public static void registerBlockTagProvider(TagKey<Block> tag, EIBlockProvider provider) {
+        //<editor-fold desc="EI Internal Code" defaultstate="collapsed">
+        ExtendedInteractionsImpl.BLOCK_PROVIDERS.registerToTag(tag.location(), provider);
         //</editor-fold>
     }
 
@@ -55,9 +68,9 @@ public final class ExtendedInteractions {
         if (holder.unwrapKey().isEmpty())
             throw new IllegalArgumentException("Provided entity type is not yet registered! Register it to minecraft registry before registering extended interactions to it");
         //? if >=1.21.11 {
-        /*ExtendedInteractionsImpl.registerProvider(holder.unwrapKey().get().identifier(), provider);
+        /*ExtendedInteractionsImpl.ENTITY_PROVIDERS.register(holder.unwrapKey().get().identifier(), provider);
         *///?} else
-        ExtendedInteractionsImpl.registerProvider(holder.unwrapKey().get().location(), provider);
+        ExtendedInteractionsImpl.ENTITY_PROVIDERS.register(holder.unwrapKey().get().location(), provider);
         //</editor-fold>
     }
 
@@ -73,9 +86,21 @@ public final class ExtendedInteractions {
         if (key.isEmpty())
             throw new IllegalArgumentException("Provided entity type is not yet registered! Register it to minecraft registry before registering extended interactions to it");
         //? if >=1.21.11 {
-        /*ExtendedInteractionsImpl.registerProvider(key.get().identifier(), provider);
+        /*ExtendedInteractionsImpl.ENTITY_PROVIDERS.register(key.get().identifier(), provider);
         *///?} else
-        ExtendedInteractionsImpl.registerProvider(key.get().location(), provider);
+        ExtendedInteractionsImpl.ENTITY_PROVIDERS.register(key.get().location(), provider);
+        //</editor-fold>
+    }
+
+    /**
+     * Registers entity interaction provider to entity type tag.<br>
+     * This must be done during {@link EIPlugin#registerProviders()} or exception will be thrown!
+     * @param tag Tag to register provider for
+     * @param provider Entity provider to register
+     */
+    public static void registerEntityTagProvider(TagKey<EntityType<?>> tag, EIEntityProvider provider) {
+        //<editor-fold desc="EI Internal Code" defaultstate="collapsed">
+        ExtendedInteractionsImpl.ENTITY_PROVIDERS.registerToTag(tag.location(), provider);
         //</editor-fold>
     }
 

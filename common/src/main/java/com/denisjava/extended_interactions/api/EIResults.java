@@ -18,7 +18,16 @@ public final class EIResults {
      * @param interaction Interaction provided.
      */
     public static EIResultImpl.Result success(ExtInteraction interaction) {
-        return new EIResultImpl.Successful(interaction);
+        return new EIResultImpl.Successful(interaction, (String) null);
+    }
+
+    /**
+     * Successful provider result.
+     * @param interaction Interaction provided.
+     * @param iconOverride Overridden icon name.
+     */
+    public static EIResultImpl.Result success(ExtInteraction interaction, String iconOverride) {
+        return new EIResultImpl.Successful(interaction, iconOverride);
     }
 
     /**

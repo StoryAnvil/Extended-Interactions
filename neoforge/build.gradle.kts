@@ -18,7 +18,9 @@ stonecutter {
     dependencies["neoforge"] = commonMod.prop("neoForgeVersion")
 }
 
-dependencies {}
+dependencies {
+    implementation("dev.isxander:yet-another-config-lib:${commonMod.prop("yaclVersion")}+${commonMod.minecraftVersion}-neoforge")
+}
 
 neoForge {
     runs {

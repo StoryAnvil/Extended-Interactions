@@ -1,22 +1,37 @@
 package com.denisjava.extended_interactions.util;
 
-import java.util.*;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 
-public class EIProviderRegistry<SUBJECT, PROVIDER> {
-    private final HashMap<SUBJECT, ArrayList<PROVIDER>> data = new HashMap<>();
+import java.util.*;
+import java.util.stream.Stream;
+
+public class EIProviderRegistry<PROVIDER> {
+    private final HashMap<ResourceLocation, ArrayList<PROVIDER>> data = new HashMap<>();
     private boolean frozen = false;
 
-    public Iterable<PROVIDER> listAll(SUBJECT subject) {
+    public void register(ResourceLocation subject, PROVIDER provider) {
+        if (frozen) throw new IllegalStateException("EIProviderRegistry is frozen already! You are registering providers too late.");
+
+        ArrayList<PROVIDER> providers = data.computeIfAbsent(subject, u -> new ArrayList<>(1));
+        providers.add(provider);
+    }
+    public void registerToTag(ResourceLocation subjectTag, PROVIDER provider) {
+        register(ResourceLocation.fromNamespaceAndPath("tags", subjectTag.getNamespace() + '/' + subjectTag.getPath()), provider);
+    }
+
+    public Iterable<PROVIDER> listAll(ResourceLocation subject) {
         ArrayList<PROVIDER> providers = data.get(subject);
         if (providers == null) return List.of();
         return providers;
     }
 
-    public void register(SUBJECT subject, PROVIDER provider) {
-        if (frozen) throw new IllegalStateException("EIProviderRegistry is frozen already! You are registering providers too late.");
+    public <T> Stream<Iterable<PROVIDER>> listAll(ResourceLocation subject, Stream<TagKey<T>> tags) {
+        return Stream.concat(Stream.of(subject), tags.map(EIProviderRegistry::keyToResourceLocation)).map(this::listAll);
+    }
 
-        ArrayList<PROVIDER> providers = data.computeIfAbsent(subject, u -> new ArrayList<>(1));
-        providers.add(provider);
+    private static <T> ResourceLocation keyToResourceLocation(TagKey<T> t) {
+        return ResourceLocation.fromNamespaceAndPath("tags", t.location().getNamespace() + t.location().getPath());
     }
 
     public void freeze() {

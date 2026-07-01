@@ -3,21 +3,28 @@ package com.denisjava.extended_interactions.neoforge;
 import com.denisjava.extended_interactions.EICommon;
 import com.denisjava.extended_interactions.EIPlatform;
 import com.denisjava.extended_interactions.client.EIClient;
+import com.denisjava.extended_interactions.config.EIClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+
 import java.util.function.Consumer;
 
 @Mod(value = EICommon.MOD_ID, dist = Dist.CLIENT)
 @EventBusSubscriber(modid = EICommon.MOD_ID, value = Dist.CLIENT)
 public class EIClientNeoForge {
-    public EIClientNeoForge() {
+    public EIClientNeoForge(IEventBus bus, ModContainer container) {
         EIClient.init();
+        container.registerExtensionPoint(IConfigScreenFactory.class, (modContainer, screen) ->
+                EIClientConfig.generateScreen(screen));
     }
 
     @SubscribeEvent

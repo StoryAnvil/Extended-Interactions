@@ -16,6 +16,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.io.File;
 import java.util.function.BiConsumer;
 
 public class EIFabric implements ModInitializer, EIPlatform, EIPlatform.NetworkRegistrar {
@@ -45,6 +46,11 @@ public class EIFabric implements ModInitializer, EIPlatform, EIPlatform.NetworkR
     @Override
     public void sendToClient(ServerPlayer player, CustomPacketPayload payload) {
         ServerPlayNetworking.send(player, payload);
+    }
+
+    @Override
+    public File getConfigDir() {
+        return FabricLoader.getInstance().getConfigDir().toFile();
     }
 
     @Override

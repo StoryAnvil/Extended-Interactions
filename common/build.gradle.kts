@@ -16,6 +16,7 @@ neoForge {
 
 dependencies {
     compileOnly("org.spongepowered:mixin:${commonMod.prop("mixinVersion")}")
+    implementation("dev.isxander:yet-another-config-lib:${commonMod.prop("yaclVersion")}+${commonMod.minecraftVersion}-neoforge")
 }
 
 val commonJava: Configuration by configurations.creating {

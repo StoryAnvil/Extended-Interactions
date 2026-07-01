@@ -1,5 +1,7 @@
 package com.denisjava.extended_interactions.api;
 
+import net.minecraft.resources.ResourceLocation;
+
 /**
  * Interface for all extended interactions plugins.<br>
  * Implementing classes must have {@link EIPluginClass} annotation
@@ -21,4 +23,11 @@ public interface EIPlugin {
      * @return mod id of mod that created this plugin. Mismatched values will cause errors!
      */
     String getDeclaringModId();
+
+    /**
+     * @return unique identifier for this plugin. Namespace must match {@link EIPlugin#getDeclaringModId}
+     */
+    ResourceLocation getUID();
+
+    default void createClientYACLConfigs(EIYACLConfigFactory factory) {}
 }
