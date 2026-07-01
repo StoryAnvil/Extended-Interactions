@@ -86,7 +86,7 @@ public class RadialMenuScreen extends Screen {
     }
 
     private void bake() {
-        final int radius = 48;
+        final int radius = EIClientConfig.HANDLER.instance().radialMenuRadius;
 
         successful = new ActionData[successfulResults.size()];
         for (int i = 0; i < successful.length; i++) {
@@ -100,6 +100,11 @@ public class RadialMenuScreen extends Screen {
                     result.interaction.getName()
             );
         }
+
+        if (!EIClientConfig.HANDLER.instance().displayFailed) {
+            failedResults = List.of();
+        }
+
         //EICommon.LOG.info("Baked {}", Arrays.toString(successful));
     }
 
@@ -132,7 +137,7 @@ public class RadialMenuScreen extends Screen {
 
     @Override
     //? if >=1.21.11 {
-    /*public boolean mouseClicked(@NonNull MouseButtonEvent event, boolean arg1) {
+    /*public boolean mouseClicked(@NotNull net.minecraft.client.input.MouseButtonEvent event, boolean arg1) {
     *///? } else {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
     //? }

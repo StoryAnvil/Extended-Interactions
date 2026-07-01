@@ -34,7 +34,4 @@ public abstract class JavaInteraction extends ExtInteraction {
      * This done on both logical client and server.
      */
     public void handleEntityExecution(Player player, Level level, Entity target) {}
-
-    @Override
-    final void _totally_not_sus_method_preventing_bad_subclasses_() {}
 }

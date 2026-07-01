@@ -19,6 +19,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -60,7 +61,15 @@ public class EINeoForge implements EIPlatform {
 
     @Override
     public File getConfigDir() {
-        return FMLPaths.CONFIGDIR.get().toFile();
+        return FMLPaths.CONFIGDIR.get().resolve("extended-interactions").toFile();
+    }
+
+    @Override
+    public boolean isDevEnvironment() {
+        //? if <1.21.11
+        return !FMLLoader.isProduction();
+        //? if >=1.21.11
+        //return !FMLLoader.getCurrent().isProduction();
     }
 
     @SubscribeEvent

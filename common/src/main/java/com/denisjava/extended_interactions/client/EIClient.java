@@ -5,6 +5,7 @@ import com.denisjava.extended_interactions.EIPlatform;
 import com.denisjava.extended_interactions.config.EIClientConfig;
 import com.denisjava.extended_interactions.impl.MenuTarget;
 import com.denisjava.extended_interactions.network.MenuResultPacket;
+import com.denisjava.extended_interactions.util.EIUtils;
 import com.denisjava.extended_interactions.util.Lazy;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.brigadier.CommandDispatcher;
@@ -33,6 +34,7 @@ public class EIClient {
     //?}
 
     public static void init() {
+        EIUtils.checkConfigDirectory();
         EIClientConfig.HANDLER.load();
     }
 

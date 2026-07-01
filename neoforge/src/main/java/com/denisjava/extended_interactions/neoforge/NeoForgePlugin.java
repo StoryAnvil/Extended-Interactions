@@ -1,6 +1,7 @@
 package com.denisjava.extended_interactions.neoforge;
 
 import com.denisjava.extended_interactions.api.EIPlugin;
+import com.denisjava.extended_interactions.api.EIPluginClass;
 import com.denisjava.extended_interactions.impl.PluginData;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.neoforgespi.language.ModFileScanData.AnnotationData;
@@ -20,6 +21,14 @@ public record NeoForgePlugin(ModContainer container, AnnotationData data) implem
         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException |
                  IllegalAccessException e) {
             throw new RuntimeException("Failed to initialize extended_interactions plugin from mod: " + getModId(), e);
+        } catch (ClassCastException e) {
+            throw new RuntimeException("extended_interactions plugin for mod " + getModId() + " does not subclass EIPlugin interface!", e);
         }
+    }
+
+    @Override
+    public EIPluginClass getAnnotation() throws ClassNotFoundException {
+        Class<?> clazz = Class.forName(data.memberName());
+        return clazz.getAnnotation(EIPluginClass.class);
     }
 }

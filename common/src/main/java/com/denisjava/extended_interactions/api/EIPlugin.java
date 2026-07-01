@@ -1,5 +1,6 @@
 package com.denisjava.extended_interactions.api;
 
+import dev.isxander.yacl3.api.OptionGroup;
 import net.minecraft.resources.ResourceLocation;
 
 /**
@@ -29,5 +30,11 @@ public interface EIPlugin {
      */
     ResourceLocation getUID();
 
+    /**
+     * Create client config options for this plugin.<br>
+     * Created YACL {@link OptionGroup.Builder} will be added to Extended Interaction's config screen automatically.
+     * You do not need to build provided builder.
+     * @param factory Factory to create a {@link OptionGroup.Builder}
+     */
     default void createClientYACLConfigs(EIYACLConfigFactory factory) {}
 }

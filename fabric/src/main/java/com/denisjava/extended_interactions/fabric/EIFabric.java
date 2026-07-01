@@ -26,7 +26,7 @@ public class EIFabric implements ModInitializer, EIPlatform, EIPlatform.NetworkR
         CommandRegistrationCallback.EVENT.register(EICommands::registerCommands);
         EICommon.registerPlugins(FabricLoader.getInstance().getEntrypointContainers("extended_interactions", EIPlugin.class)
                 .stream()
-                .map(container -> (PluginData) new FabricPlugin(container.getProvider(), container.getEntrypoint()))
+                .map(container -> (PluginData) new FabricPlugin(container))
                 .toList()
         );
 
@@ -50,7 +50,12 @@ public class EIFabric implements ModInitializer, EIPlatform, EIPlatform.NetworkR
 
     @Override
     public File getConfigDir() {
-        return FabricLoader.getInstance().getConfigDir().toFile();
+        return FabricLoader.getInstance().getConfigDir().resolve("extended-interactions").toFile();
+    }
+
+    @Override
+    public boolean isDevEnvironment() {
+        return FabricLoader.getInstance().isDevelopmentEnvironment();
     }
 
     @Override

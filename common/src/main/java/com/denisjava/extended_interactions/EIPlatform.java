@@ -3,7 +3,6 @@ package com.denisjava.extended_interactions;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.io.File;
@@ -18,6 +17,7 @@ public interface EIPlatform {
     void sendToServer(CustomPacketPayload payload);
     void sendToClient(ServerPlayer player, CustomPacketPayload payload);
     File getConfigDir();
+    boolean isDevEnvironment();
 
     interface NetworkRegistrar {
         <T extends CustomPacketPayload> void registerC2SPayload(CustomPacketPayload.Type<T> type, StreamCodec<RegistryFriendlyByteBuf, T> codec, BiConsumer<T, ServerPlayer> listener);

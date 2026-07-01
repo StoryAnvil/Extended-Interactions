@@ -58,9 +58,4 @@ public abstract class ExtInteraction {
      * @param target Interaction's target
      */
     public abstract void handleExecution(Player player, MenuTarget target);
-
-    /**
-     * Subclass {@link JavaInteraction} instead of {@link ExtInteraction}!
-     */
-    abstract void _totally_not_sus_method_preventing_bad_subclasses_();
 }

@@ -13,7 +13,8 @@
             "com.denisjava.extended_interactions.fabric.EIClientFabric"
         ],
         "extended_interactions": [
-            "com.denisjava.extended_interactions.compat.MinecraftInteractions"
+            "com.denisjava.extended_interactions.debug.DebugPlugin",
+            "com.denisjava.extended_interactions.config.EIDataManager"
         ],
         "modmenu": [
             "com.denisjava.extended_interactions.fabric.ModMenuCompat"
