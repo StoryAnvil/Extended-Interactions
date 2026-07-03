@@ -10,7 +10,6 @@
             "com.denisjava.extended_interactions.fabric.EIFabric"
         ],
         "client": [
-            "com.denisjava.extended_interactions.fabric.EIClientFabric"
         ],
         "extended_interactions": [
             "com.denisjava.extended_interactions.debug.DebugPlugin",

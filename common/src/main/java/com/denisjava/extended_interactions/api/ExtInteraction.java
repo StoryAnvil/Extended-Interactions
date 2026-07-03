@@ -40,6 +40,10 @@ public abstract class ExtInteraction {
         return Component.translatable(id.toLanguageKey("extinter"));
     }
 
+    public EIPlugin getDeclaringPlugin() {
+        return declaringPlugin;
+    }
+
     /**
      * Returns icon for provided override name ({@link EIResults#success(ExtInteraction, String)}.<br>
      * Use {@link EIResults#success(ExtInteraction, String)} in your provider to supply icon override name and

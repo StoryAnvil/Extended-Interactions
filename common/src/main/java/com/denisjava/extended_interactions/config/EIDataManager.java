@@ -40,13 +40,24 @@ public class EIDataManager implements EIPlugin {
                 EICommon.LOG.error("Caused by", e);
             }
         }
+
+        if (new File(EICommon.getPlatform().getConfigDir(), "debug").exists()) {
+            EICommon.LOG.info("=== BEGIN EIDATAMANAGER DEBUG ==");
+            for (Pair<DataDrivenInteraction, List<DataDrivenProviders.ProviderRegistrar>> interaction : interactions) {
+                EICommon.LOG.info("Interaction: {}", interaction.getFirst());
+                for (DataDrivenProviders.ProviderRegistrar provider : interaction.getSecond()) {
+                    EICommon.LOG.info("Provider: {}", provider);
+                }
+            }
+            EICommon.LOG.info("=== END EIDATAMANAGER DEBUG ==");
+        }
     }
 
     private void parseFile(RegistryOps<JsonElement> ops, File file) throws IOException {
         try (FileInputStream io = new FileInputStream(file);
         InputStreamReader reader = new InputStreamReader(io)) {
             JsonElement element = JsonParser.parseReader(reader);
-            DataDrivenProviders.InteractionTemplate template = DataDrivenProviders.INTERACTION_TEMPLATE_CODEC.decode(ops, element)
+            DataDrivenInteraction.InteractionTemplate template = DataDrivenInteraction.INTERACTION_TEMPLATE_CODEC.decode(ops, element)
                     .getOrThrow(IOException::new).getFirst();
             String name = file.getName().substring(0, file.getName().length() - 5);
             interactions.add(template.build(name, this));

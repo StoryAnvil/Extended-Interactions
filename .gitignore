@@ -45,3 +45,6 @@ bin/
 ### AnvilBuild, Stonecutter ###
 runs
 .idea/runConfigurations
+
+### Other ###
+mods.txt

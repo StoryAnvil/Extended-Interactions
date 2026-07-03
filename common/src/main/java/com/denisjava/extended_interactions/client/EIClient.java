@@ -5,21 +5,21 @@ import com.denisjava.extended_interactions.EIPlatform;
 import com.denisjava.extended_interactions.config.EIClientConfig;
 import com.denisjava.extended_interactions.impl.MenuTarget;
 import com.denisjava.extended_interactions.network.MenuResultPacket;
+import com.denisjava.extended_interactions.util.EIKeyMapping;
 import com.denisjava.extended_interactions.util.EIUtils;
 import com.denisjava.extended_interactions.util.Lazy;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.lwjgl.glfw.GLFW;
 
-import static com.denisjava.extended_interactions.EICommon.id;
+import java.util.Map;
 
 public class EIClient {
+    public static Runnable platformKeyDebug = null;
     //? if >=1.21.11 {
     /*public static final KeyMapping.Category KEYMAPPING_CATEGORY = KeyMapping.Category.register(id("main"));
     public static final Lazy<KeyMapping> OPEN_RADIAL = new Lazy<>(() -> new KeyMapping(
@@ -71,5 +71,22 @@ public class EIClient {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void scheduleClient(Runnable runnable) {
         Minecraft.getInstance().submit(runnable);
+    }
+
+    public static void pressKey(String keymapping) {
+        KeyMapping key = ((EIKeyMapping) OPEN_RADIAL.get()).ei$getAll().get(keymapping);
+        if (key == null) {
+            EICommon.LOG.warn("KeyMapping {} does not exist", keymapping);
+            return;
+        }
+        ((EIKeyMapping) key).ei$addClick();
+    }
+
+    public static void debugKeys() {
+        EICommon.LOG.info("== KEY DEBUG ==");
+        for (Map.Entry<String, KeyMapping> entry : ((EIKeyMapping) OPEN_RADIAL.get()).ei$getAll().entrySet()) {
+            EICommon.LOG.info("Key {}={}", entry.getKey(), entry.getValue().getTranslatedKeyMessage().getString());
+        }
+        platformKeyDebug.run();
     }
 }

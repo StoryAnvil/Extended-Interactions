@@ -4,6 +4,7 @@ import com.denisjava.extended_interactions.EICommon;
 import com.denisjava.extended_interactions.EIPlatform;
 import com.denisjava.extended_interactions.client.EIClient;
 import com.denisjava.extended_interactions.config.EIClientConfig;
+import com.denisjava.extended_interactions.impl.ExtendedInteractionsImpl;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.neoforged.api.distmarker.Dist;
@@ -25,6 +26,13 @@ public class EIClientNeoForge {
         EIClient.init();
         container.registerExtensionPoint(IConfigScreenFactory.class, (modContainer, screen) ->
                 EIClientConfig.generateScreen(screen));
+        EIClient.platformKeyDebug = EIClientNeoForge::platformKeyDebug;
+
+        ExtendedInteractionsImpl.freezeCountDown();
+    }
+
+    private static void platformKeyDebug() {
+
     }
 
     @SubscribeEvent

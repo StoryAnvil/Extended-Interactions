@@ -3,6 +3,7 @@ package com.denisjava.extended_interactions;
 import com.denisjava.extended_interactions.api.EIPlugin;
 import com.denisjava.extended_interactions.api.EIPluginClass;
 import com.denisjava.extended_interactions.api.InteractionRegistrar;
+import com.denisjava.extended_interactions.config.DataDrivenActions;
 import com.denisjava.extended_interactions.config.EIDataManager;
 import com.denisjava.extended_interactions.impl.ExtendedInteractionsImpl;
 import com.denisjava.extended_interactions.impl.PluginData;
@@ -25,6 +26,7 @@ public class EICommon {
 
     public static void init(EIPlatform platform) {
         EICommon.platform = platform;
+        DataDrivenActions.register();
     }
 
     public static EIPlatform getPlatform() {
@@ -54,6 +56,7 @@ public class EICommon {
             plugin.registerProviders();
         }
         ExtendedInteractionsImpl.freezeRegistries();
+        ExtendedInteractionsImpl.freezeCountDown();
     }
 
     private static EIPlugin loadPlugin(PluginData data) {
@@ -75,7 +78,7 @@ public class EICommon {
             if (!data.getModId().equals(plugin.getDeclaringModId()))
                 throw new RuntimeException("Plugin's getDeclaringModId() does not return \"" + data.getModId() + "\"");
             if (!data.getModId().equals(Objects.requireNonNull(plugin.getUID()).getNamespace()))
-                throw new RuntimeException("Plugin's getUID() returns ResourceLocation/ResouceLocation with incorrect namespace");
+                throw new RuntimeException("Plugin's getUID() returns ResourceLocation with incorrect namespace");
 
             return plugin;
         } catch (ClassNotFoundException | RuntimeException e) {

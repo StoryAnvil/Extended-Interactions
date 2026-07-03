@@ -4,10 +4,16 @@ import com.denisjava.extended_interactions.network.BlockMenuRequestPacket;
 import com.denisjava.extended_interactions.network.EntityMenuRequestPacket;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec2;
 
 import java.util.List;
 
@@ -26,6 +32,8 @@ public abstract class MenuTarget {
      * Returns client predicated list of interactions
      */
     public abstract Pair<List<EIResultImpl.Successful>, List<EIResultImpl.Failed>> collectClientSide(Player player);
+
+    public abstract CommandSourceStack createStack(ServerLevel level);
 
     public abstract Either<BlockPos, Integer> getEither();
 
@@ -46,6 +54,12 @@ public abstract class MenuTarget {
         @Override
         public Pair<List<EIResultImpl.Successful>, List<EIResultImpl.Failed>> collectClientSide(Player player) {
             return ExtendedInteractionsImpl.sort(ExtendedInteractionsImpl.collectForBlock(level, player, pos));
+        }
+
+        @Override
+        public CommandSourceStack createStack(ServerLevel level) {
+            return new CommandSourceStack(CommandSource.NULL, pos.getCenter(), Vec2.ZERO, level, 2,
+                    "EI BLOCK", Component.literal("EI BLOCK"), level.getServer(), null);
         }
 
         @Override
@@ -81,6 +95,15 @@ public abstract class MenuTarget {
         @Override
         public Pair<List<EIResultImpl.Successful>, List<EIResultImpl.Failed>> collectClientSide(Player player) {
             return ExtendedInteractionsImpl.sort(ExtendedInteractionsImpl.collectForEntity(player.level(), player, player.level().getEntity(entityId)));
+        }
+
+        @Override
+        public CommandSourceStack createStack(ServerLevel level) {
+            Entity entity = level.getEntity(entityId);
+            assert entity != null;
+            return new CommandSourceStack(CommandSource.NULL, entity.getPosition(1), Vec2.ZERO, level, 2,
+                    "EI ENTITY", Component.translatable("extended_interactions.cmdentity", entity.getDisplayName()),
+                    level.getServer(), entity);
         }
 
         @Override

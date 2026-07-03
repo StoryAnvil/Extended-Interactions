@@ -1,5 +1,6 @@
 package com.denisjava.extended_interactions.util;
 
+import com.denisjava.extended_interactions.EICommon;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 
@@ -31,7 +32,7 @@ public class EIProviderRegistry<PROVIDER> {
     }
 
     private static <T> ResourceLocation keyToResourceLocation(TagKey<T> t) {
-        return ResourceLocation.fromNamespaceAndPath("tags", t.location().getNamespace() + t.location().getPath());
+        return ResourceLocation.fromNamespaceAndPath("tags", t.location().getNamespace() + '/' + t.location().getPath());
     }
 
     public void freeze() {

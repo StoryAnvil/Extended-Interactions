@@ -2,24 +2,26 @@ package com.denisjava.extended_interactions.config;
 
 import com.denisjava.extended_interactions.EICommon;
 import com.denisjava.extended_interactions.api.EIPlugin;
+import com.denisjava.extended_interactions.api.ExtInteraction;
 import com.denisjava.extended_interactions.client.EIClient;
 import com.denisjava.extended_interactions.impl.EIYACLConfigFactoryImpl;
 import com.denisjava.extended_interactions.impl.ExtendedInteractionsImpl;
 import com.denisjava.extended_interactions.util.Lazy;
 import com.google.gson.GsonBuilder;
 import dev.isxander.yacl3.api.*;
+import dev.isxander.yacl3.api.controller.EnumControllerBuilder;
 import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
-import dev.isxander.yacl3.api.controller.SliderControllerBuilder;
 import dev.isxander.yacl3.api.controller.StringControllerBuilder;
 import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import static com.denisjava.extended_interactions.EICommon.id;
@@ -31,6 +33,7 @@ public class EIClientConfig {
             .serializer(config -> GsonConfigSerializerBuilder.create(config)
                     .setPath(new File(EICommon.getPlatform().getConfigDir(), "client.json5").toPath())
                     .appendGsonBuilder(GsonBuilder::setPrettyPrinting)
+                    //.appendGsonBuilder(s -> s.registerTypeAdapter(new CleanMap<ExtInteractionState>().getClass(), new Clean))
                     .setJson5(true)
                     .build())
             .build();
@@ -126,6 +129,14 @@ public class EIClientConfig {
     }
 
     public static ConfigCategory generateClientVisCategory() {
+        OptionGroup.Builder b = OptionGroup.createBuilder()
+                .name(translatable("extended_interactions.eis"))
+                .description(OptionDescription.of(translatable("extended_interactions.eis.help")));
+
+        for (ExtInteraction i : ExtendedInteractionsImpl.getAllInteractions()) {
+            b.option(interactionStateOption(i));
+        }
+
         return ConfigCategory.createBuilder()
                 .name(translatable("extended_interactions.client_vis"))
                 .tooltip(translatable("extended_interactions.client_vis.tooltip"))
@@ -135,6 +146,7 @@ public class EIClientConfig {
                         .option(RADIAL_MENU_RADIUS.get())
                         .option(DISPLAY_FAILED.get())
                         .build())
+                .group(b.build())
                 .build();
     }
 
@@ -142,6 +154,29 @@ public class EIClientConfig {
         return OptionGroup.createBuilder()
                 .name(translatable("extended_interactions.binds"))
                 .option(RADIAL_MENU_BIND.get())
+                .build();
+    }
+
+    private static Option<ExtInteractionState> interactionStateOption(final ExtInteraction interaction) {
+        final String key = interaction.getId().toString();
+        return Option.<ExtInteractionState>createBuilder()
+                .name(interaction.getName())
+                .description(OptionDescription.of(
+                        translatable("extended_interactions.inter_toggle", interaction.getName()),
+                        translatable("extended_interactions.inter_info", translatable(interaction.getDeclaringPlugin().getUID().toLanguageKey("ei_plugin")),
+                                Component.literal(interaction.getDeclaringPlugin().getDeclaringModId()))
+                ))
+                .controller(opt -> EnumControllerBuilder.create(opt)
+                        .enumClass(ExtInteractionState.class))
+                .binding(ExtInteractionState.DEFAULT, () -> {
+                    return HANDLER.instance().interactions.getOrDefault(key, ExtInteractionState.DEFAULT);
+                }, s -> {
+                    if (s == ExtInteractionState.DEFAULT) {
+                        HANDLER.instance().interactions.remove(key);
+                    } else {
+                        HANDLER.instance().interactions.put(key, s);
+                    }
+                })
                 .build();
     }
 
@@ -170,6 +205,17 @@ public class EIClientConfig {
             comment = "Display failed interactions"
     )
     public boolean displayFailed = true;
+
+    @SerialEntry(
+            comment = """
+                    Client-side disabled interactions.
+                    Interaction id <-> DEFAULT/HIDE/HIDE_FAILURES
+                    DEFAULT - interaction is enabled
+                    HIDE - interaction is fully hidden
+                    HIDE_FAILURES - interactions is only visible if it is available to use
+                    """
+    )
+    public Map<String, ExtInteractionState> interactions = new HashMap<>();
 
     private static void predictInteractionsListener(Option<Boolean> booleanOption, OptionEventListener.Event event) {
         ALLOW_PREDICT_USAGE.get().setAvailable(booleanOption.pendingValue());

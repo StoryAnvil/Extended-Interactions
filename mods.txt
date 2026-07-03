@@ -1,6 +1,7 @@
 Carry on
 pat pat
 JEI (find recipes using target block, find recipes to craft target block)
+Malilib/MaFgLib keybinds as DataDriven actions
+Right click with item as DataDriven actions
 
-- Block Provider: Level level, BlockPos pos, BlockState state
--
+Client-side interactions (not replicated to server at all)

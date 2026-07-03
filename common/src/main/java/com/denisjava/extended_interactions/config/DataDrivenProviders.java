@@ -2,12 +2,9 @@ package com.denisjava.extended_interactions.config;
 
 import com.denisjava.extended_interactions.api.EIBlockProvider;
 import com.denisjava.extended_interactions.api.EIEntityProvider;
-import com.denisjava.extended_interactions.api.EIPlugin;
 import com.denisjava.extended_interactions.api.EIResults;
-import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import com.denisjava.extended_interactions.impl.ExtendedInteractionsImpl;
 import com.denisjava.extended_interactions.util.EIUtils;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -23,14 +20,12 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public class DataDrivenProviders {
     public static final Codec<ResourceLocation> LITERAL_OR_TAG_CODEC = Codec.STRING.comapFlatMap(DataDrivenProviders::readLOR, DataDrivenProviders::writeLOR);
@@ -51,28 +46,6 @@ public class DataDrivenProviders {
             LITERAL_OR_TAG_CODEC.fieldOf("subject").forGetter(EntityProvider::subjectId),
             ENTITY_PREDICATE_CODEC.listOf().fieldOf("if").forGetter(EntityProvider::predicate)
     ).apply(inst, EntityProvider::new));
-    public static final Codec<InteractionTemplate> INTERACTION_TEMPLATE_CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            ItemStack.CODEC.fieldOf("icon").forGetter(InteractionTemplate::icon),
-            BLOCK_PROVIDER_CODEC.listOf().fieldOf("blocks").forGetter(InteractionTemplate::blockProviders),
-            ENTITY_PROVIDER_CODEC.listOf().fieldOf("entities").forGetter(InteractionTemplate::entityProviders)
-    ).apply(inst, InteractionTemplate::new));
-
-    public record InteractionTemplate(
-            ItemStack icon,
-            List<BlockProvider> blockProviders,
-            List<EntityProvider> entityProviders
-    ) {
-        public Pair<DataDrivenInteraction, List<ProviderRegistrar>> build(String name, EIPlugin declaringPlugin) {
-            DataDrivenInteraction interaction = new DataDrivenInteraction(
-                    ResourceLocation.fromNamespaceAndPath("custom", name),
-                    new ExtInteractionIcon.ItemStackIcon(icon),
-                    declaringPlugin
-            );
-            List<ProviderRegistrar> registrars = Stream.concat(blockProviders.stream().map(e -> (ProviderRegistrar) e),
-                    entityProviders.stream().map(e -> (ProviderRegistrar) e)).toList();
-            return new Pair<>(interaction, registrars);
-        }
-    }
 
     public record BlockStatePredicate(Optional<StatePropertiesPredicate> properties, Optional<NbtPredicate> nbt, Optional<Component> message) {
         public boolean test(Level level, BlockPos pos, BlockState state) {
@@ -138,17 +111,13 @@ public class DataDrivenProviders {
         return rl.toString();
     }
     private static DataResult<ResourceLocation> readLOR(String s) {
-        DataResult<ResourceLocation> read = ResourceLocation.read(s);
-        if (read.isError()) return read;
-        ResourceLocation rl = read.getOrThrow(); // should be fine
-        if (rl.getNamespace().equals("tags")) {
-            int d = rl.getPath().indexOf('/');
-            if (d == -1) return DataResult.success(ResourceLocation.withDefaultNamespace(rl.getPath()));
-            String namespace = rl.getPath().substring(0, d);
-            String path = rl.getPath().substring(d + 1);
-            return DataResult.success(ResourceLocation.fromNamespaceAndPath(namespace, path));
+        if (s.startsWith("#")) {
+            DataResult<ResourceLocation> rl = ResourceLocation.read(s.substring(1));
+            if (rl.isError()) return rl;
+            ResourceLocation r = rl.getOrThrow();
+            return DataResult.success(ResourceLocation.fromNamespaceAndPath("tags", r.getNamespace() + '/' + r.getPath()));
         }
-        return DataResult.success(rl);
+        return ResourceLocation.read(s);
     }
     public interface ProviderRegistrar {
         void registerProvider(DataDrivenInteraction interaction);

@@ -1,6 +1,5 @@
 package com.denisjava.extended_interactions;
 
-import com.denisjava.extended_interactions.api.EIResults;
 import com.denisjava.extended_interactions.impl.EIResultImpl;
 import com.denisjava.extended_interactions.impl.ExtendedInteractionsImpl;
 import com.mojang.brigadier.CommandDispatcher;

@@ -55,6 +55,10 @@ repositories {
             includeGroup("dev.isxander")
         }
     }
+    maven {
+        name = "ParchmentMC"
+        url = uri("https://maven.parchmentmc.org")
+    }
 }
 
 tasks {
@@ -82,6 +86,8 @@ tasks {
             "fabricLoaderVersionRange" to commonMod.propOrNull("fabricLoaderVersionRange"),
             "fabricAPIVersion" to commonMod.propOrNull("fabricAPIVersion"),
             "fabricAPIVersionRange" to commonMod.propOrNull("fabricAPIVersionRange"),
+            "malilibMin" to commonMod.propOrNull("malilibMin"),
+            "mafglibMin" to commonMod.propOrNull("mafglibMin"),
         ).filterValues { it?.isNotEmpty() == true }.mapValues { (_, v) -> v!! }.toMutableMap()
         props["__NEOFORGE_UPDATE_CHECKER__"] = forgeVersionChecker
         val jsonProps = props.mapValues { (_, v) -> v.replace("\n", "\\\\n") }

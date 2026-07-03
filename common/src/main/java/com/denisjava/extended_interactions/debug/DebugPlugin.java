@@ -18,9 +18,9 @@ import static com.denisjava.extended_interactions.EICommon.id;
 
 @EIPluginClass(requiredMods = {"*dev"})
 public class DebugPlugin implements EIPlugin {
-    private final DebugInteraction[] DEBUG = new DebugInteraction[]{
+    private final JavaInteraction[] DEBUG = new JavaInteraction[]{
             new DebugInteraction(id("debug0"), new ExtInteractionIcon.ItemStackIcon(Items.RED_DYE), this),
-            new DebugInteraction(id("debug1"), new ExtInteractionIcon.ItemStackIcon(Items.ORANGE_DYE), this),
+            new KeyDebugInteraction(id("debug1"), new ExtInteractionIcon.ItemStackIcon(Items.ORANGE_DYE), this),
             new DebugInteraction(id("debug2"), new ExtInteractionIcon.ItemStackIcon(Items.YELLOW_DYE), this),
             new DebugInteraction(id("debug3"), new ExtInteractionIcon.ItemStackIcon(Items.GREEN_DYE), this),
             new DebugInteraction(id("debug4"), new ExtInteractionIcon.ItemStackIcon(Items.LIME_DYE), this),
@@ -31,7 +31,7 @@ public class DebugPlugin implements EIPlugin {
 
     @Override
     public void registerInteractions(InteractionRegistrar registrar) {
-        for (DebugInteraction i : DEBUG) {
+        for (JavaInteraction i : DEBUG) {
             registrar.register(i);
         }
         registrar.register(DESYNC_TEST);
@@ -39,7 +39,7 @@ public class DebugPlugin implements EIPlugin {
 
     @Override
     public void registerProviders() {
-        for (DebugInteraction i : DEBUG) {
+        for (JavaInteraction i : DEBUG) {
             ExtendedInteractions.registerBlockProvider(Blocks.DIAMOND_BLOCK, constantProvider(i));
         }
         ExtendedInteractions.registerBlockProvider(Blocks.GRASS_BLOCK, constantProvider(DEBUG[0]));
@@ -51,7 +51,7 @@ public class DebugPlugin implements EIPlugin {
         return EIResults.success(DESYNC_TEST);
     }
 
-    private EIBlockProvider constantProvider(DebugInteraction interaction) {
+    private EIBlockProvider constantProvider(JavaInteraction interaction) {
         return (level, user, pos, state) -> EIResults.success(interaction);
     }
 

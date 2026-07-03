@@ -5,6 +5,7 @@ import com.denisjava.extended_interactions.EICommon;
 import com.denisjava.extended_interactions.EIPlatform;
 import com.denisjava.extended_interactions.api.EIPlugin;
 import com.denisjava.extended_interactions.impl.PluginData;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -24,13 +25,19 @@ public class EIFabric implements ModInitializer, EIPlatform, EIPlatform.NetworkR
     public void onInitialize() {
         EICommon.init(this);
         CommandRegistrationCallback.EVENT.register(EICommands::registerCommands);
+        EICommon.registerPayloads(this);
+
+        // Fabric runs client initializers after all main ones
+        // We don't want that
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            SuperAntiClassLoaderErrorDohickey.safelyInitializeClient();
+        }
+
         EICommon.registerPlugins(FabricLoader.getInstance().getEntrypointContainers("extended_interactions", EIPlugin.class)
                 .stream()
                 .map(container -> (PluginData) new FabricPlugin(container))
                 .toList()
         );
-
-        EICommon.registerPayloads(this);
     }
 
     @Override

@@ -6,7 +6,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.storage.TagValueOutput;
 
 import java.io.File;
 
@@ -30,7 +29,7 @@ public class EIUtils {
         entity.save(tag);
         return tag;
         //?} else {
-        /*TagValueOutput ctx = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, entity.level().registryAccess());
+        /*net.minecraft.world.level.storage.TagValueOutput ctx = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, entity.level().registryAccess());
         entity.save(ctx);
         return ctx.buildResult();
         *///?}

@@ -5,6 +5,7 @@ import com.denisjava.extended_interactions.api.EIBlockProvider;
 import com.denisjava.extended_interactions.api.EIEntityProvider;
 import com.denisjava.extended_interactions.api.EIPlugin;
 import com.denisjava.extended_interactions.api.ExtInteraction;
+import com.denisjava.extended_interactions.config.DataDrivenAction;
 import com.denisjava.extended_interactions.network.BlockMenuRequestPacket;
 import com.denisjava.extended_interactions.network.EntityMenuRequestPacket;
 import com.denisjava.extended_interactions.network.MenuResultPacket;
@@ -13,6 +14,7 @@ import com.denisjava.extended_interactions.util.EIProviderRegistry;
 import com.denisjava.extended_interactions.util.EIResultCollector;
 import com.denisjava.extended_interactions.util.EIUtils;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.MapCodec;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -31,18 +33,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class ExtendedInteractionsImpl {
     public static final EIProviderRegistry<EIBlockProvider> BLOCK_PROVIDERS = new EIProviderRegistry<>();
     public static final EIProviderRegistry<EIEntityProvider> ENTITY_PROVIDERS = new EIProviderRegistry<>();
     private static final HashMap<ResourceLocation, ExtInteraction> INTERACTIONS = new HashMap<>();
+    private static final HashMap<ResourceLocation, MapCodec<? extends DataDrivenAction>> DD_ACTIONS = new HashMap<>();
     private static List<EIPlugin> ALL_PLUGINS = List.of();
-    private static boolean frozen = false;
+    private static int frozen = 2;
 
     public static final StreamCodec<ByteBuf, ExtInteraction> INTERACTION_STREAM_CODEC = ResourceLocation.STREAM_CODEC.map(identifier -> {
         ExtInteraction interaction = INTERACTIONS.get(identifier);
@@ -61,7 +61,7 @@ public class ExtendedInteractionsImpl {
     );
 
     public static void registerInteraction(ExtInteraction interaction) {
-        if (frozen) throw new IllegalStateException("Extended interactions registry is already frozen! You are registering interactions too late.");
+        if (frozen <= 0) throw new IllegalStateException("Extended interactions registry is already frozen! You are registering interactions too late.");
 
         if (INTERACTIONS.containsKey(interaction.getId()))
             throw new IllegalStateException("ExtInteraction with id " + interaction.getId() + " is already registered!");
@@ -69,10 +69,26 @@ public class ExtendedInteractionsImpl {
         INTERACTIONS.put(interaction.getId(), interaction);
     }
 
+    public static void registerAction(ResourceLocation id, MapCodec<? extends DataDrivenAction> codec) {
+        if (frozen <= 0) throw new IllegalStateException("Extended interactions registry is already frozen! You are registering actions too late.");
+
+        if (DD_ACTIONS.containsKey(id))
+            throw new IllegalStateException("DataDrivenAction with id " + id + " is already registered!");
+
+        DD_ACTIONS.put(id, codec);
+    }
+
+    public static MapCodec<? extends DataDrivenAction> getActionCodec(ResourceLocation id) {
+        return DD_ACTIONS.get(id);
+    }
+
     public static void freezeRegistries() {
         BLOCK_PROVIDERS.freeze();
         ENTITY_PROVIDERS.freeze();
-        frozen = true;
+    }
+
+    public static void freezeCountDown() {
+        frozen--;
     }
 
     public static List<EIResultImpl.Result> collectForBlock(Level level, Player player, BlockPos pos) {
@@ -159,6 +175,10 @@ public class ExtendedInteractionsImpl {
                 results.stream().filter(result -> result instanceof EIResultImpl.Successful).map(result -> (EIResultImpl.Successful) result).toList(),
                 results.stream().filter(result -> result instanceof EIResultImpl.Failed).map(result -> (EIResultImpl.Failed) result).toList()
         );
+    }
+
+    public static Iterable<ExtInteraction> getAllInteractions() {
+        return INTERACTIONS.values();
     }
 
     public static void setAllPlugins(List<EIPlugin> allPlugins) {

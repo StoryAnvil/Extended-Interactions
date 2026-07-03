@@ -3,6 +3,7 @@ package com.denisjava.extended_interactions.client;
 import com.denisjava.extended_interactions.EICommon;
 import com.denisjava.extended_interactions.api.ExtInteraction;
 import com.denisjava.extended_interactions.config.EIClientConfig;
+import com.denisjava.extended_interactions.config.ExtInteractionState;
 import com.denisjava.extended_interactions.impl.EIResultImpl;
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import com.denisjava.extended_interactions.impl.MenuTarget;
@@ -21,6 +22,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Map;
 
 public class RadialMenuScreen extends Screen {
     private static final ResourceLocation SLOT_SPRITE = ResourceLocation.withDefaultNamespace("gamemode_switcher/slot");
@@ -87,6 +89,12 @@ public class RadialMenuScreen extends Screen {
 
     private void bake() {
         final int radius = EIClientConfig.HANDLER.instance().radialMenuRadius;
+        Map<String, ExtInteractionState> stateMap = EIClientConfig.HANDLER.instance().interactions;
+
+        successfulResults = successfulResults.stream().filter(s ->
+                stateMap.get(s.interaction.getId().toString()) != ExtInteractionState.HIDE).toList();
+        failedResults = failedResults.stream().filter(s ->
+                stateMap.getOrDefault(s.interaction.getId().toString(), ExtInteractionState.DEFAULT) == ExtInteractionState.DEFAULT).toList();
 
         successful = new ActionData[successfulResults.size()];
         for (int i = 0; i < successful.length; i++) {

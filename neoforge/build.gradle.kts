@@ -16,10 +16,14 @@ neoForge {
 
 stonecutter {
     dependencies["neoforge"] = commonMod.prop("neoForgeVersion")
+    constants["mafglib"] = commonMod.prop("mafglib") != "NONE"
 }
 
 dependencies {
     implementation("dev.isxander:yet-another-config-lib:${commonMod.prop("yaclVersion")}+${commonMod.minecraftVersion}-neoforge")
+    if (commonMod.prop("mafglib") != "NONE") {
+        implementation("maven.modrinth:SKI34J7B:${commonMod.prop("mafglib")}")
+    }
 }
 
 neoForge {
