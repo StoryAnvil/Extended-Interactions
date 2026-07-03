@@ -2,7 +2,7 @@ import java.nio.file.Paths
 
 plugins {
     `anvilbuild-loader`
-    id("fabric-loom") version "1.14-SNAPSHOT"
+    id("fabric-loom") version "1.17-SNAPSHOT"
 }
 
 group = commonMod.prop("modGroup")

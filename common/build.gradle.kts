@@ -19,12 +19,12 @@ dependencies {
     implementation("dev.isxander:yet-another-config-lib:${commonMod.prop("yaclVersion")}+${commonMod.minecraftVersion}-neoforge")
 }
 
-val commonJava: Configuration by configurations.creating {
+val commonJava: Configuration = configurations.create("commonJava") {
     isCanBeResolved = false
     isCanBeConsumed = true
 }
 
-val commonResources: Configuration by configurations.creating {
+val commonResources: Configuration = configurations.create("commonResources") {
     isCanBeResolved = false
     isCanBeConsumed = true
 }
