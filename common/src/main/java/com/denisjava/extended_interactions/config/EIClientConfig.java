@@ -133,7 +133,13 @@ public class EIClientConfig {
                 .name(translatable("extended_interactions.eis"))
                 .description(OptionDescription.of(translatable("extended_interactions.eis.help")));
 
-        for (ExtInteraction i : ExtendedInteractionsImpl.getAllInteractions()) {
+        EIPlugin currentPlugin = null;
+        for (ExtInteraction i : ExtendedInteractionsImpl.getAllInteractions()
+                .stream().sorted(EIClientConfig::interactionSorter).toList()) {
+            if (currentPlugin != i.getDeclaringPlugin()) {
+                currentPlugin = i.getDeclaringPlugin();
+                b.option(LabelOption.create(translatable(currentPlugin.getUID().toLanguageKey("ei_plugin"))));
+            }
             b.option(interactionStateOption(i));
         }
 
@@ -219,5 +225,9 @@ public class EIClientConfig {
 
     private static void predictInteractionsListener(Option<Boolean> booleanOption, OptionEventListener.Event event) {
         ALLOW_PREDICT_USAGE.get().setAvailable(booleanOption.pendingValue());
+    }
+
+    private static int interactionSorter(ExtInteraction i1, ExtInteraction i2) {
+        return i1.getDeclaringPlugin().getUID().compareTo(i2.getDeclaringPlugin().getUID());
     }
 }

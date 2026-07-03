@@ -4,7 +4,10 @@
     "package": "com.denisjava.extended_interactions.mixin",
     "refmap": "${modId}.refmap.json",
     "compatibilityLevel": "JAVA_18",
-    "mixins": [],
+    "mixins": [
+        "InventoryMixin",
+        "PlayerMixin"
+    ],
     "client": [
         "KeyMappingMixin"
     ],

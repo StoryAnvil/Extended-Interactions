@@ -13,6 +13,7 @@ import com.denisjava.extended_interactions.network.RunExtInteractionPacket;
 import com.denisjava.extended_interactions.util.EIProviderRegistry;
 import com.denisjava.extended_interactions.util.EIResultCollector;
 import com.denisjava.extended_interactions.util.EIUtils;
+import com.denisjava.extended_interactions.util.ThrowableEIResult;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.MapCodec;
 import io.netty.buffer.ByteBuf;
@@ -110,7 +111,11 @@ public class ExtendedInteractionsImpl {
 
         for (Iterable<EIBlockProvider> providers : BLOCK_PROVIDERS.listAll(key, tags).toList()) {
             for (EIBlockProvider provider : providers) {
-                collector.offer(provider.collectForBlock(level, player, pos, state));
+                try {
+                    collector.offer(provider.collectForBlock(level, player, pos, state));
+                } catch (ThrowableEIResult e) {
+                    collector.offer(e.getResult());
+                }
             }
         }
 
@@ -134,7 +139,11 @@ public class ExtendedInteractionsImpl {
 
         for (Iterable<EIEntityProvider> providers : ENTITY_PROVIDERS.listAll(key, tags).toList()) {
             for (EIEntityProvider provider : providers) {
-                collector.offer(provider.collectForEntity(level, player, entity));
+                try {
+                    collector.offer(provider.collectForEntity(level, player, entity));
+                } catch (ThrowableEIResult e) {
+                    collector.offer(e.getResult());
+                }
             }
         }
 
@@ -179,7 +188,7 @@ public class ExtendedInteractionsImpl {
         );
     }
 
-    public static Iterable<ExtInteraction> getAllInteractions() {
+    public static Collection<ExtInteraction> getAllInteractions() {
         return INTERACTIONS.values();
     }
 

@@ -1,6 +1,5 @@
 package com.denisjava.extended_interactions.util;
 
-import com.denisjava.extended_interactions.EICommon;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 
@@ -8,6 +7,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class EIProviderRegistry<PROVIDER> {
+    public static final ResourceLocation ALL = ResourceLocation.withDefaultNamespace("all");
     private final HashMap<ResourceLocation, ArrayList<PROVIDER>> data = new HashMap<>();
     private boolean frozen = false;
 
@@ -28,7 +28,7 @@ public class EIProviderRegistry<PROVIDER> {
     }
 
     public <T> Stream<Iterable<PROVIDER>> listAll(ResourceLocation subject, Stream<TagKey<T>> tags) {
-        return Stream.concat(Stream.of(subject), tags.map(EIProviderRegistry::keyToResourceLocation)).map(this::listAll);
+        return Stream.concat(Stream.of(subject, ALL), tags.map(EIProviderRegistry::keyToResourceLocation)).map(this::listAll);
     }
 
     private static <T> ResourceLocation keyToResourceLocation(TagKey<T> t) {

@@ -1,6 +1,7 @@
 package com.denisjava.extended_interactions.api;
 
 import com.denisjava.extended_interactions.impl.EIResultImpl;
+import com.denisjava.extended_interactions.util.ThrowableEIResult;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -17,5 +18,5 @@ public interface EIEntityProvider {
      * @param entity Entity to supply interaction for
      * @return Provider result. See {@link EIResults#success(ExtInteraction)}, {@link EIResults#silentFailure(ExtInteraction)}, {@link EIResults#failure(ExtInteraction, Component)}
      */
-    @NotNull EIResultImpl.Result collectForEntity(Level level, Player user, Entity entity);
+    @NotNull EIResultImpl.Result collectForEntity(Level level, Player user, Entity entity) throws ThrowableEIResult;
 }

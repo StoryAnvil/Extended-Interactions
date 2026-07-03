@@ -3,6 +3,7 @@ package com.denisjava.extended_interactions.impl;
 import com.denisjava.extended_interactions.api.EIBlockProvider;
 import com.denisjava.extended_interactions.api.EIEntityProvider;
 import com.denisjava.extended_interactions.api.ProviderRegistrar;
+import com.denisjava.extended_interactions.util.EIProviderRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
@@ -42,6 +43,11 @@ public final class ProviderRegistrarImpl implements ProviderRegistrar {
     }
 
     @Override
+    public void universalBlockProvider(EIBlockProvider provider) {
+        ExtendedInteractionsImpl.BLOCK_PROVIDERS.register(EIProviderRegistry.ALL, provider);
+    }
+
+    @Override
     public void entityProvider(Holder<? extends EntityType<?>> holder, EIEntityProvider provider) {
         if (holder.unwrapKey().isEmpty())
             throw new IllegalArgumentException("Provided entity type is not yet registered! Register it to minecraft registry before registering extended interactions to it");
@@ -67,5 +73,10 @@ public final class ProviderRegistrarImpl implements ProviderRegistrar {
     @Override
     public void entityTagProvider(TagKey<EntityType<?>> tag, EIEntityProvider provider) {
         ExtendedInteractionsImpl.ENTITY_PROVIDERS.registerToTag(tag.location(), provider);
+    }
+
+    @Override
+    public void universalEntityProvider(EIEntityProvider provider) {
+        ExtendedInteractionsImpl.ENTITY_PROVIDERS.register(EIProviderRegistry.ALL, provider);
     }
 }

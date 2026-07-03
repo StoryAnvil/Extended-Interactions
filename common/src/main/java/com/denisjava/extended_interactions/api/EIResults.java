@@ -1,7 +1,10 @@
 package com.denisjava.extended_interactions.api;
 
 import com.denisjava.extended_interactions.impl.EIResultImpl;
+import com.denisjava.extended_interactions.util.ThrowableEIResult;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Optional;
@@ -47,6 +50,22 @@ public final class EIResults {
      */
     public static EIResultImpl.Result failure(ExtInteraction interaction, Component error) {
         return new EIResultImpl.Failed(interaction, error);
+    }
+
+    public static EIResultImpl.Result failure(ExtInteraction interaction, String error) {
+        return new EIResultImpl.Failed(interaction, Component.translatable(
+                interaction.getId().toLanguageKey("extinter") + '.' + error));
+    }
+
+    public static void noCreative(ExtInteraction interaction, Player player) throws ThrowableEIResult {
+        if (player.hasInfiniteMaterials()) throw new ThrowableEIResult(failure(interaction, Component.translatable("extinter.generic.no_creative")));
+    }
+
+    public static <Q extends ExtInteraction & ExtInteraction.SimpleProvider> void check(Q interaction, Player player, String error) throws ThrowableEIResult {
+        if (interaction.providerFail(player)) throw new ThrowableEIResult(failure(interaction, error));
+    }
+    public static <Q extends ExtInteraction & ExtInteraction.EntityProvider> void check(Q interaction, Player player, Entity target, String error) throws ThrowableEIResult {
+        if (interaction.providerFail(player, target)) throw new ThrowableEIResult(failure(interaction, error));
     }
 
     @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "OptionalIsPresent"})

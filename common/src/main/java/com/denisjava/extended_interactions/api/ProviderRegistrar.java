@@ -31,6 +31,13 @@ public interface ProviderRegistrar {
     void blockTagProvider(TagKey<Block> tag, EIBlockProvider provider);
 
     /**
+     * Registers block interaction provider to all blocks.<br>
+     * This must be done during {@link EIPlugin#registerProviders(ProviderRegistrar)} or exception will be thrown!
+     * @param provider Block provider to register
+     */
+    void universalBlockProvider(EIBlockProvider provider);
+
+    /**
      * Registers entity interaction provider.<br>
      * This must be done during {@link EIPlugin#registerProviders(ProviderRegistrar)} or exception will be thrown!
      * @param holder Registered holder of entity type that will be a potential target for the provider
@@ -53,6 +60,13 @@ public interface ProviderRegistrar {
      * @param provider Entity provider to register
      */
     void entityTagProvider(TagKey<EntityType<?>> tag, EIEntityProvider provider);
+
+    /**
+     * Registers entity interaction provider to all entity types.<br>
+     * This must be done during {@link EIPlugin#registerProviders(ProviderRegistrar)} or exception will be thrown!
+     * @param provider Entity provider to register
+     */
+    void universalEntityProvider(EIEntityProvider provider);
 
     //<editor-fold desc="EI Internal Code" defaultstate="collapsed">
     // ♥

@@ -2,12 +2,16 @@ package com.denisjava.extended_interactions.util;
 
 import com.denisjava.extended_interactions.EICommon;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ProblemReporter;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.io.File;
+import java.util.function.Predicate;
 
 public class EIUtils {
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -21,6 +25,18 @@ public class EIUtils {
             if (!dir.mkdirs())
                 EICommon.LOG.error("Failed to create extended-interaction's config directory!");
         }
+    }
+
+    @SuppressWarnings("ConstantValue")
+    public static int findItem(Player player, Predicate<ItemStack> predicate) {
+        Container inventory = player.getInventory();
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            ItemStack stack = inventory.getItem(i);
+            if (stack != null && predicate.test(stack)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public static CompoundTag save(Entity entity) {

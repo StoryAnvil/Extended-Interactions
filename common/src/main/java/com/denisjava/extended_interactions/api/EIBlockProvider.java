@@ -1,6 +1,7 @@
 package com.denisjava.extended_interactions.api;
 
 import com.denisjava.extended_interactions.impl.EIResultImpl;
+import com.denisjava.extended_interactions.util.ThrowableEIResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -19,5 +20,5 @@ public interface EIBlockProvider {
      * @param state Block's state
      * @return Provider result. See {@link EIResults#success(ExtInteraction)}, {@link EIResults#silentFailure(ExtInteraction)}, {@link EIResults#failure(ExtInteraction, Component)}
      */
-    @NotNull EIResultImpl.Result collectForBlock(Level level, Player user, BlockPos pos, BlockState state);
+    @NotNull EIResultImpl.Result collectForBlock(Level level, Player user, BlockPos pos, BlockState state) throws ThrowableEIResult;
 }

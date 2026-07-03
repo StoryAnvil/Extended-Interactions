@@ -62,4 +62,17 @@ public abstract class ExtInteraction {
      * @param target Interaction's target
      */
     public abstract void handleExecution(Player player, MenuTarget target);
+
+    public interface SimpleProvider {
+        boolean providerCheck(Player player);
+        default boolean providerFail(Player player) {
+            return !providerCheck(player);
+        }
+    }
+    public interface EntityProvider {
+        boolean providerCheck(Player player, Entity target);
+        default boolean providerFail(Player player, Entity target) {
+            return !providerCheck(player, target);
+        }
+    }
 }

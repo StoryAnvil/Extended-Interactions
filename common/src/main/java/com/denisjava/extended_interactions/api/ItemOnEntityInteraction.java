@@ -1,0 +1,50 @@
+package com.denisjava.extended_interactions.api;
+
+import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
+import com.denisjava.extended_interactions.util.EIPlayer;
+import com.denisjava.extended_interactions.util.EIUtils;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+
+import java.util.function.Predicate;
+
+public class ItemOnEntityInteraction extends JavaInteraction implements ExtInteraction.SimpleProvider {
+    private final Predicate<ItemStack> item;
+    public ItemOnEntityInteraction(ResourceLocation id, ExtInteractionIcon icon, EIPlugin declaringPlugin, Predicate<ItemStack> item) {
+        super(id, icon, declaringPlugin);
+        this.item = item;
+    }
+
+    public ItemOnEntityInteraction(ResourceLocation id, ExtInteractionIcon icon, EIPlugin declaringPlugin, Item item) {
+        this(id, icon, declaringPlugin, stack -> stack.is(item));
+    }
+
+    @Override
+    public void handleEntityExecution(Player player, Level level, Entity target) {
+        int slot = EIUtils.findItem(player, item);
+        if (slot == -1) return;
+        try {
+            ((EIPlayer) player).ei$overrideMainHandSlot(slot);
+            player.interactOn(target, InteractionHand.MAIN_HAND);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            ((EIPlayer) player).ei$overrideMainHandSlot();
+        }
+    }
+
+    @Override
+    public boolean providerCheck(Player player) {
+        return EIUtils.findItem(player, item) != -1;
+    }
+
+    @Override
+    public boolean providerFail(Player player) {
+        return EIUtils.findItem(player, item) == -1;
+    }
+}
