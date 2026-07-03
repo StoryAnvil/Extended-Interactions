@@ -2,11 +2,11 @@ package com.denisjava.extended_interactions;
 
 import com.denisjava.extended_interactions.api.EIPlugin;
 import com.denisjava.extended_interactions.api.EIPluginClass;
-import com.denisjava.extended_interactions.api.InteractionRegistrar;
-import com.denisjava.extended_interactions.config.DataDrivenActions;
 import com.denisjava.extended_interactions.config.EIDataManager;
 import com.denisjava.extended_interactions.impl.ExtendedInteractionsImpl;
+import com.denisjava.extended_interactions.impl.InteractionRegistrarImpl;
 import com.denisjava.extended_interactions.impl.PluginData;
+import com.denisjava.extended_interactions.impl.ProviderRegistrarImpl;
 import com.denisjava.extended_interactions.network.BlockMenuRequestPacket;
 import com.denisjava.extended_interactions.network.EntityMenuRequestPacket;
 import com.denisjava.extended_interactions.network.MenuResultPacket;
@@ -26,7 +26,6 @@ public class EICommon {
 
     public static void init(EIPlatform platform) {
         EICommon.platform = platform;
-        DataDrivenActions.register();
     }
 
     public static EIPlatform getPlatform() {
@@ -47,13 +46,17 @@ public class EICommon {
 
     public static void registerPlugins(List<PluginData> pluginCandidates) {
         EIUtils.checkConfigDirectory();
-        List<EIPlugin> plugins = pluginCandidates.stream().map(EICommon::loadPlugin).filter(Objects::nonNull).toList();
+        List<EIPlugin> plugins = pluginCandidates.stream().map(EICommon::loadPlugin).filter(Objects::nonNull)
+                .sorted(EICommon::pluginSorter).toList();
+        EICommon.LOG.info("Loading order: {}", plugins.stream().map(EIPlugin::getUID).toList());
         ExtendedInteractionsImpl.setAllPlugins(plugins);
-        InteractionRegistrar registrar = new InteractionRegistrar();
-        EIDataManager.load();
+        ProviderRegistrarImpl providerRegistrar = new ProviderRegistrarImpl();
+        InteractionRegistrarImpl interactionRegistrar = new InteractionRegistrarImpl();
         for (EIPlugin plugin : plugins) {
-            plugin.registerInteractions(registrar);
-            plugin.registerProviders();
+            interactionRegistrar.setCurrentPlugin(plugin);
+            plugin.init();
+            plugin.registerInteractions(interactionRegistrar);
+            plugin.registerProviders(providerRegistrar);
         }
         ExtendedInteractionsImpl.freezeRegistries();
         ExtendedInteractionsImpl.freezeCountDown();
@@ -67,9 +70,11 @@ public class EICommon {
             for (String modId : a.requiredMods()) {
                 if (modId.equals("*dev")) {
                     if (platform.isDevEnvironment()) continue;
+                    LOG.info("EI Plugin {} requires IDE environment. Plugin won't be loaded", data.getName());
                     return null;
                 }
                 if (platform.isModLoaded(modId)) continue;
+                LOG.info("EI Plugin {} requires {} which is missing. Plugin won't be loaded", data.getName(), modId);
                 return null;
             }
 
@@ -84,5 +89,9 @@ public class EICommon {
         } catch (ClassNotFoundException | RuntimeException e) {
             throw new RuntimeException("Failed to load extended interaction's addon with mod id: " + data.getModId(), e);
         }
+    }
+
+    private static int pluginSorter(EIPlugin p1, EIPlugin p2) {
+        return p2.loadingPriority() - p1.loadingPriority();
     }
 }

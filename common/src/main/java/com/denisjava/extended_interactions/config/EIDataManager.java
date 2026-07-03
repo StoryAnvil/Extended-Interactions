@@ -4,6 +4,7 @@ import com.denisjava.extended_interactions.EICommon;
 import com.denisjava.extended_interactions.api.EIPlugin;
 import com.denisjava.extended_interactions.api.EIPluginClass;
 import com.denisjava.extended_interactions.api.InteractionRegistrar;
+import com.denisjava.extended_interactions.api.ProviderRegistrar;
 import com.google.gson.*;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
@@ -18,10 +19,10 @@ import java.util.List;
 
 @EIPluginClass
 public class EIDataManager implements EIPlugin {
-    private static EIDataManager instance = null;
     private final List<Pair<DataDrivenInteraction, List<DataDrivenProviders.ProviderRegistrar>>> interactions = new ArrayList<>();
 
-    private void load0() {
+    @Override
+    public void init() {
         File custom = new File(EICommon.getPlatform().getConfigDir(), "custom");
         if (!custom.exists() && !custom.mkdirs())
             EICommon.LOG.error("Failed to create extended interactions config directory {}", custom);
@@ -57,17 +58,21 @@ public class EIDataManager implements EIPlugin {
         try (FileInputStream io = new FileInputStream(file);
         InputStreamReader reader = new InputStreamReader(io)) {
             JsonElement element = JsonParser.parseReader(reader);
-            DataDrivenInteraction.InteractionTemplate template = DataDrivenInteraction.INTERACTION_TEMPLATE_CODEC.decode(ops, element)
-                    .getOrThrow(IOException::new).getFirst();
-            String name = file.getName().substring(0, file.getName().length() - 5);
-            interactions.add(template.build(name, this));
+            try {
+                DataDrivenInteraction.InteractionTemplate template = DataDrivenInteraction.INTERACTION_TEMPLATE_CODEC.decode(ops, element)
+                        .getOrThrow(IOException::new).getFirst();
+                String name = file.getName().substring(0, file.getName().length() - 5);
+                interactions.add(template.build(name, this));
+            } catch (Exception e) {
+                throw new IOException("Failed to decode template", e);
+            }
         } catch (JsonIOException | JsonSyntaxException e) {
             throw new IOException("Failed to parse JSON", e);
         }
     }
 
     @Override
-    public void registerProviders() {
+    public void registerProviders(ProviderRegistrar providerRegistrar) {
         for (Pair<DataDrivenInteraction, List<DataDrivenProviders.ProviderRegistrar>> interaction : interactions) {
             DataDrivenInteraction i = interaction.getFirst();
             for (DataDrivenProviders.ProviderRegistrar registrar : interaction.getSecond()) {
@@ -93,11 +98,10 @@ public class EIDataManager implements EIPlugin {
         return EICommon.id("custom");
     }
 
-    public EIDataManager() {
-        instance = this;
-    }
-
-    public static void load() {
-        instance.load0();
+    @Override
+    public int loadingPriority() {
+        // we need to load AFTER other plugins.
+        // to let them register data driven actions
+        return 0;
     }
 }

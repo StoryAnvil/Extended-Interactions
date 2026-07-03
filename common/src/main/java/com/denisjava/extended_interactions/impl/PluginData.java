@@ -11,4 +11,5 @@ public interface PluginData {
     String getModId();
     EIPlugin newInstance();
     EIPluginClass getAnnotation() throws ClassNotFoundException;
+    String getName();
 }

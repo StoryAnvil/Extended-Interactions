@@ -31,4 +31,9 @@ public record NeoForgePlugin(ModContainer container, AnnotationData data) implem
         Class<?> clazz = Class.forName(data.memberName());
         return clazz.getAnnotation(EIPluginClass.class);
     }
+
+    @Override
+    public String getName() {
+        return data.memberName();
+    }
 }

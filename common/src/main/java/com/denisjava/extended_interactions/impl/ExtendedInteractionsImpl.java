@@ -79,7 +79,9 @@ public class ExtendedInteractionsImpl {
     }
 
     public static MapCodec<? extends DataDrivenAction> getActionCodec(ResourceLocation id) {
-        return DD_ACTIONS.get(id);
+        MapCodec<? extends DataDrivenAction> codec = DD_ACTIONS.get(id);
+        if (codec == null) throw new IllegalArgumentException("Data Driven Action codec with id " + id + " does not exist!");
+        return codec;
     }
 
     public static void freezeRegistries() {

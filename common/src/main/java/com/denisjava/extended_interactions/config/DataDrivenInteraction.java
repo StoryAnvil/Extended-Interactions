@@ -1,5 +1,6 @@
 package com.denisjava.extended_interactions.config;
 
+import com.denisjava.extended_interactions.EICommon;
 import com.denisjava.extended_interactions.api.EIPlugin;
 import com.denisjava.extended_interactions.api.ExtInteraction;
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
@@ -19,7 +20,7 @@ public class DataDrivenInteraction extends ExtInteraction {
             ItemStack.CODEC.fieldOf("icon").forGetter(InteractionTemplate::icon),
             DataDrivenProviders.BLOCK_PROVIDER_CODEC.listOf().fieldOf("blocks").forGetter(InteractionTemplate::blockProviders),
             DataDrivenProviders.ENTITY_PROVIDER_CODEC.listOf().fieldOf("entities").forGetter(InteractionTemplate::entityProviders),
-            DataDrivenActions.CODEC.listOf().fieldOf("actions").forGetter(InteractionTemplate::actions)
+            DataDrivenAction.CODEC.listOf().fieldOf("actions").forGetter(InteractionTemplate::actions)
     ).apply(inst, InteractionTemplate::new));
 
     private final List<DataDrivenAction> actions;
@@ -43,7 +44,7 @@ public class DataDrivenInteraction extends ExtInteraction {
     ) {
         public Pair<DataDrivenInteraction, List<DataDrivenProviders.ProviderRegistrar>> build(String name, EIPlugin declaringPlugin) {
             DataDrivenInteraction interaction = new DataDrivenInteraction(
-                    ResourceLocation.fromNamespaceAndPath("custom", name),
+                    EICommon.id("custom/" + name),
                     new ExtInteractionIcon.ItemStackIcon(icon),
                     declaringPlugin, actions
 

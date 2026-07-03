@@ -21,7 +21,7 @@ import java.util.Map;
 public class EIClient {
     public static Runnable platformKeyDebug = null;
     //? if >=1.21.11 {
-    /*public static final KeyMapping.Category KEYMAPPING_CATEGORY = KeyMapping.Category.register(id("main"));
+    /*public static final KeyMapping.Category KEYMAPPING_CATEGORY = KeyMapping.Category.register(EICommon.id("main"));
     public static final Lazy<KeyMapping> OPEN_RADIAL = new Lazy<>(() -> new KeyMapping(
             "key.extended_interactions.open_radial", InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_TAB, KEYMAPPING_CATEGORY

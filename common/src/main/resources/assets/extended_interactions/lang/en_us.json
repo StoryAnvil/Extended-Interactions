@@ -43,6 +43,6 @@
     "extinter.extended_interactions.debug6": "Sixth Debug Action",
     "extinter.extended_interactions.debug7": "Seventh Debug Action",
     "extinter.extended_interactions.desync": "Unpredictable Debug Action",
-    "ei_plugin.extended_interactions.minecraft": "Minecraft Interactions",
-    "ei_plugin.extended_interactions.debug": "EI Debug"
+    "ei_plugin.extended_interactions.debug": "EI Debug",
+    "ei_plugin.extended_interactions.builtin": "Extended Interactions Builtins"
 }

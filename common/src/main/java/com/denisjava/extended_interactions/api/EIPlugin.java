@@ -9,16 +9,23 @@ import net.minecraft.resources.ResourceLocation;
  */
 public interface EIPlugin {
     /**
+     * Called before {@link EIPlugin#registerProviders(ProviderRegistrar)} and
+     * {@link EIPlugin#registerInteractions(InteractionRegistrar)}.<br>
+     * Do all your preparations here.
+     */
+    default void init() {};
+
+    /**
      * Register interaction providers during this method.<br>
-     * Use methods from {@link ExtendedInteractions} api class.<br>
+     * Use methods from {@link ProviderRegistrar} api class.<br>
      * Providers should work both on logical client and logical server.
      */
-    void registerProviders();
+    default void registerProviders(ProviderRegistrar registrar) {};
 
     /**
      * Register interactions during this method.
      */
-    void registerInteractions(InteractionRegistrar registrar);
+    default void registerInteractions(InteractionRegistrar registrar) {};
 
     /**
      * @return mod id of mod that created this plugin. Mismatched values will cause errors!
@@ -37,4 +44,8 @@ public interface EIPlugin {
      * @param factory Factory to create a {@link OptionGroup.Builder}
      */
     default void createClientYACLConfigs(EIYACLConfigFactory factory) {}
+
+    default int loadingPriority() {
+        return 1000;
+    }
 }

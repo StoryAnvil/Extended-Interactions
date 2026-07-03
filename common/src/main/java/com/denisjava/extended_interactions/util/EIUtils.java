@@ -29,7 +29,7 @@ public class EIUtils {
         entity.save(tag);
         return tag;
         //?} else {
-        /*net.minecraft.world.level.storage.TagValueOutput ctx = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, entity.level().registryAccess());
+        /*net.minecraft.world.level.storage.TagValueOutput ctx = net.minecraft.world.level.storage.TagValueOutput.createWithContext(ProblemReporter.DISCARDING, entity.level().registryAccess());
         entity.save(ctx);
         return ctx.buildResult();
         *///?}

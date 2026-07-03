@@ -20,4 +20,9 @@ public record FabricPlugin(EntrypointContainer<EIPlugin> container) implements P
     public EIPluginClass getAnnotation() throws ClassNotFoundException {
         return Class.forName(container.getDefinition()).getAnnotation(EIPluginClass.class);
     }
+
+    @Override
+    public String getName() {
+        return container.getDefinition();
+    }
 }

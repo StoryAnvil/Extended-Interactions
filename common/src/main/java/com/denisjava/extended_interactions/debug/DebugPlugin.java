@@ -38,12 +38,12 @@ public class DebugPlugin implements EIPlugin {
     }
 
     @Override
-    public void registerProviders() {
+    public void registerProviders(ProviderRegistrar registrar) {
         for (JavaInteraction i : DEBUG) {
-            ExtendedInteractions.registerBlockProvider(Blocks.DIAMOND_BLOCK, constantProvider(i));
+            registrar.blockProvider(Blocks.DIAMOND_BLOCK, constantProvider(i));
         }
-        ExtendedInteractions.registerBlockProvider(Blocks.GRASS_BLOCK, constantProvider(DEBUG[0]));
-        ExtendedInteractions.registerBlockProvider(Blocks.GRASS_BLOCK, this::desyncTest);
+        registrar.blockProvider(Blocks.GRASS_BLOCK, constantProvider(DEBUG[0]));
+        registrar.blockProvider(Blocks.GRASS_BLOCK, this::desyncTest);
     }
 
     private EIResultImpl.Result desyncTest(Level level, Player player, BlockPos pos, BlockState state) {

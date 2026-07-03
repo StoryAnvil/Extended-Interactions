@@ -1,20 +1,13 @@
 package com.denisjava.extended_interactions.api;
 
-import com.denisjava.extended_interactions.impl.ExtendedInteractionsImpl;
-import org.jetbrains.annotations.ApiStatus;
+import com.denisjava.extended_interactions.config.DataDrivenAction;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Can be accquired in {@link EIPlugin#registerInteractions(InteractionRegistrar)}
  */
-public class InteractionRegistrar {
-    public void register(ExtInteraction interaction) {
-        //<editor-fold desc="EI Internal Code" defaultstate="collapsed">
-        ExtendedInteractionsImpl.registerInteraction(interaction);
-        //</editor-fold>
-    }
-
-    //<editor-fold desc="EI Internal Code" defaultstate="collapsed">
-    @ApiStatus.Internal
-    public InteractionRegistrar() {}
-    //</editor-fold>
+public interface InteractionRegistrar {
+    void register(ExtInteraction interaction);
+    void registerDataDrivenAction(ResourceLocation id, MapCodec<? extends DataDrivenAction> codec);
 }

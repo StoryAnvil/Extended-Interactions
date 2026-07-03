@@ -2,10 +2,8 @@ package com.denisjava.extended_interactions.fabric;
 
 import com.denisjava.extended_interactions.EIPlatform;
 import com.denisjava.extended_interactions.client.EIClient;
-import com.denisjava.extended_interactions.config.DataDrivenActions;
-import com.denisjava.extended_interactions.fabric.compat.MaliliLibAction;
+import com.denisjava.extended_interactions.fabric.compat.MaliLibAction;
 import com.denisjava.extended_interactions.impl.ExtendedInteractionsImpl;
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -22,15 +20,12 @@ public class EIClientFabric implements EIPlatform.ClientNetworkRegistrar {
 
         EIClient.platformKeyDebug = EIClientFabric::platformKeyDebug;
 
-        //? malilib
-        ExtendedInteractionsImpl.registerAction(DataDrivenActions.sid("malilib"), MaliliLibAction.CODEC);
-
         ExtendedInteractionsImpl.freezeCountDown();
     }
 
     private static void platformKeyDebug() {
         //? malilib
-        MaliliLibAction.keyDebug();
+        MaliLibAction.keyDebug();
     }
 
     @Override
