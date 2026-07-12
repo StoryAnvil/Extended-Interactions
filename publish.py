@@ -10,13 +10,13 @@ LIBRARIES = {
 }
 lib = lambda a, b: {"project_id": LIBRARIES[a], "dependency_type": b}
 VERSIONS = {
-    #"1.21.1": {
-    #    "fabric": [lib("FabricAPI", "required"), lib("MaliLib", "optional")],
-    #    "neoforge": [lib("MaFgLib", "optional")]
-    #},
+    "1.21.1": {
+        "fabric": [lib("FabricAPI", "required"), lib("MaliLib", "optional")],
+        "neoforge": [lib("MaFgLib", "optional")]
+    },
     "1.21.11": {
         "fabric": [lib("FabricAPI", "required"), lib("MaliLib", "optional")],
-    #    "neoforge": [lib("MaFgLib", "optional")]
+        "neoforge": [lib("MaFgLib", "optional")]
     }
 }
 

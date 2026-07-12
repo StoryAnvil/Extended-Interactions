@@ -1,1 +1,0 @@
-./.venv/bin/python publish.py --token mrp_flPRI5tLZO6fDLMVoI3qOisbSMMh8Tm47sX2TpL4vpsTi9N2ah4LaTJawFcl
