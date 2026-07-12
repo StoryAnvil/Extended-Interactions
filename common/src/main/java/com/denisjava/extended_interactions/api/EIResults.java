@@ -61,13 +61,6 @@ public final class EIResults {
         if (player.hasInfiniteMaterials()) throw new ThrowableEIResult(failure(interaction, Component.translatable("extinter.generic.no_creative")));
     }
 
-    public static <Q extends ExtInteraction & ExtInteraction.SimpleProvider> void check(Q interaction, Player player, String error) throws ThrowableEIResult {
-        if (interaction.providerFail(player)) throw new ThrowableEIResult(failure(interaction, error));
-    }
-    public static <Q extends ExtInteraction & ExtInteraction.EntityProvider> void check(Q interaction, Player player, Entity target, String error) throws ThrowableEIResult {
-        if (interaction.providerFail(player, target)) throw new ThrowableEIResult(failure(interaction, error));
-    }
-
     @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "OptionalIsPresent"})
     public static EIResultImpl.Result optionalFailure(ExtInteraction interaction, Optional<Component> error) {
         if (error.isPresent()) return failure(interaction, error.get());

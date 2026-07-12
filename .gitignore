@@ -48,3 +48,5 @@ runs
 
 ### Other ###
 mods.txt
+.venv
+publish.sh

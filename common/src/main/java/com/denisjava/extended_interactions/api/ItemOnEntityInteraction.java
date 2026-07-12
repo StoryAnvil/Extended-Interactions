@@ -3,6 +3,7 @@ package com.denisjava.extended_interactions.api;
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import com.denisjava.extended_interactions.util.EIPlayer;
 import com.denisjava.extended_interactions.util.EIUtils;
+import com.denisjava.extended_interactions.util.ThrowableEIResult;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -31,20 +32,14 @@ public class ItemOnEntityInteraction extends JavaInteraction implements ExtInter
         try {
             ((EIPlayer) player).ei$overrideMainHandSlot(slot);
             player.interactOn(target, InteractionHand.MAIN_HAND);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         } finally {
             ((EIPlayer) player).ei$overrideMainHandSlot();
         }
     }
 
     @Override
-    public boolean providerCheck(Player player) {
-        return EIUtils.findItem(player, item) != -1;
-    }
-
-    @Override
-    public boolean providerFail(Player player) {
-        return EIUtils.findItem(player, item) == -1;
+    public void providerCheck(Player player) throws ThrowableEIResult {
+        if (EIUtils.findItem(player, item) == -1)
+            throw new ThrowableEIResult(EIResults.failure(this, "no_item"));
     }
 }

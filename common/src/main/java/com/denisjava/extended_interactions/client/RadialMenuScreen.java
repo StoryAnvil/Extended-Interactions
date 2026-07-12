@@ -27,6 +27,8 @@ import java.util.Map;
 public class RadialMenuScreen extends Screen {
     private static final ResourceLocation SLOT_SPRITE = ResourceLocation.withDefaultNamespace("gamemode_switcher/slot");
     private static final ResourceLocation SELECTION_SPRITE = ResourceLocation.withDefaultNamespace("gamemode_switcher/selection");
+    private static final ResourceLocation NO_OPTIONS_SPRITE = EICommon.id("no");
+    private final Component noOptions = Component.translatable("gui.extended_interactions.no_options");
     private final MenuTarget target;
     private List<EIResultImpl.Successful> successfulResults = List.of();
     private List<EIResultImpl.Failed> failedResults = List.of();
@@ -44,6 +46,14 @@ public class RadialMenuScreen extends Screen {
     public void render(@NotNull GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         int centerX = g.guiWidth() / 2;
         int centerY = g.guiHeight() / 2;
+
+        if (successful.length == 0) {
+            //? if >=1.21.11
+            //g.blitSprite(RenderPipelines.GUI_TEXTURED, NO_OPTIONS_SPRITE, centerX - 13, centerY - 13, 26, 26);
+            //? if <1.21.11
+            g.blitSprite(NO_OPTIONS_SPRITE, centerX - 13, centerY - 13, 26, 26);
+            g.drawString(font, noOptions, centerX - font.width(noOptions) / 2, centerY + 26, -1);
+        }
 
         for (ActionData s : successful) {
             int i1 = centerY + s.y;
@@ -76,10 +86,12 @@ public class RadialMenuScreen extends Screen {
     @Override
     protected void init() {
         // Predict interactions on client
-        if (EIClientConfig.HANDLER.instance().predictInteractions) {
+        EIClientConfig instance = EIClientConfig.HANDLER.instance();
+        if (instance.predictInteractions) {
             Pair<List<EIResultImpl.Successful>, List<EIResultImpl.Failed>> clientSideResult = target.collectClientSide(Minecraft.getInstance().player);
             successfulResults = clientSideResult.getFirst();
             failedResults = clientSideResult.getSecond();
+            serverReplied = instance.allowPredictUsage;
         }
         bake();
 
@@ -144,6 +156,24 @@ public class RadialMenuScreen extends Screen {
     }
 
     @Override
+    //? if <1.21.11 {
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        if (EIClient.OPEN_RADIAL.get().matches(keyCode, scanCode)) {
+    //?} else {
+    /*public boolean keyReleased(@NotNull net.minecraft.client.input.KeyEvent event) {
+        if (EIClient.OPEN_RADIAL.get().matches(event)) {
+    *///? }
+            submit();
+            return true;
+        }
+
+        //? if >=1.21.11
+        //return super.keyReleased(event);
+        //? if <1.21.11
+        return super.keyReleased(keyCode, scanCode, modifiers);
+    }
+
+    @Override
     //? if >=1.21.11 {
     /*public boolean mouseClicked(@NotNull net.minecraft.client.input.MouseButtonEvent event, boolean arg1) {
     *///? } else {
@@ -153,14 +183,7 @@ public class RadialMenuScreen extends Screen {
         /*if (event.button() == 0 && selectedInteraction != -1 && serverReplied) {
         *///?} else
         if (button == 0 && selectedInteraction != -1 && serverReplied) {
-            final ExtInteraction interaction = successfulResults.get(selectedInteraction).interaction;
-            EICommon.getPlatform().sendToServer(new RunExtInteractionPacket(
-                    target.getEither(), interaction.getId()
-            ));
-            EIClient.scheduleClient(() -> {
-                interaction.handleExecution(Minecraft.getInstance().player, target);
-            });
-            onClose();
+            submit();
             return true;
         }
 
@@ -168,6 +191,21 @@ public class RadialMenuScreen extends Screen {
         /*return super.mouseClicked(event, arg1);
          *///? } else
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    private void submit() {
+        if (selectedInteraction == -1) {
+            onClose();
+            return;
+        }
+        final ExtInteraction interaction = successfulResults.get(selectedInteraction).interaction;
+        EICommon.getPlatform().sendToServer(new RunExtInteractionPacket(
+                target.getEither(), interaction.getId()
+        ));
+        EIClient.scheduleClient(() -> {
+            interaction.handleExecution(Minecraft.getInstance().player, target);
+        });
+        onClose();
     }
 
     //? if >=1.21.11 {

@@ -39,13 +39,18 @@ public class EIUtils {
         return -1;
     }
 
+    public static int findItem(Player player, Item item) {
+        return findItem(player, stack -> stack.is(item));
+    }
+
     public static CompoundTag save(Entity entity) {
         //? if <1.21.11 {
         CompoundTag tag = new CompoundTag();
         entity.save(tag);
         return tag;
         //?} else {
-        /*net.minecraft.world.level.storage.TagValueOutput ctx = net.minecraft.world.level.storage.TagValueOutput.createWithContext(ProblemReporter.DISCARDING, entity.level().registryAccess());
+        /*net.minecraft.world.level.storage.TagValueOutput ctx = net.minecraft.world.level.storage.TagValueOutput.createWithContext(
+                net.minecraft.util.ProblemReporter.DISCARDING, entity.level().registryAccess());
         entity.save(ctx);
         return ctx.buildResult();
         *///?}

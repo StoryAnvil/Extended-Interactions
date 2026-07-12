@@ -122,5 +122,9 @@ public abstract class MenuTarget {
         public Either<BlockPos, Integer> getEither() {
             return Either.right(entityId);
         }
+
+        public Entity get(Player player) {
+            return player.level().getEntity(entityId);
+        }
     }
 }

@@ -1,10 +1,7 @@
 package com.denisjava.extended_interactions.impl;
 
 import com.denisjava.extended_interactions.EICommon;
-import com.denisjava.extended_interactions.api.EIBlockProvider;
-import com.denisjava.extended_interactions.api.EIEntityProvider;
-import com.denisjava.extended_interactions.api.EIPlugin;
-import com.denisjava.extended_interactions.api.ExtInteraction;
+import com.denisjava.extended_interactions.api.*;
 import com.denisjava.extended_interactions.config.DataDrivenAction;
 import com.denisjava.extended_interactions.network.BlockMenuRequestPacket;
 import com.denisjava.extended_interactions.network.EntityMenuRequestPacket;

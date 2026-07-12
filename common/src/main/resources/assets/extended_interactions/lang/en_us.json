@@ -1,4 +1,5 @@
 {
+    "gui.extended_interactions.no_options": "§cNo Options",
     "extended_interactions.config": "Extended Interaction Client Configuration",
     "extended_interactions.client_func": "Client",
     "extended_interactions.client_func.tooltip": "Configure how EI functions on client",

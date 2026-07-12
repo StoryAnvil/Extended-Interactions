@@ -62,13 +62,17 @@ public class DataDrivenProviders {
     public record BlockProvider(ResourceLocation subjectId, List<BlockStatePredicate> predicate) implements ProviderRegistrar {
         public EIBlockProvider build(final DataDrivenInteraction interaction) {
             if (predicate().isEmpty()) {
-                return (level, user, pos, state) -> EIResults.success(interaction);
+                return (level, user, pos, state) -> {
+                    interaction.test(user);
+                    return EIResults.success(interaction);
+                };
             }
             return (level, user, pos, state) -> {
                 for (BlockStatePredicate predicate : predicate) {
                     if (!predicate.test(level, pos, state))
                         return EIResults.optionalFailure(interaction, predicate.message);
                 }
+                interaction.test(user);
                 return EIResults.success(interaction);
             };
         }
@@ -84,12 +88,16 @@ public class DataDrivenProviders {
     public record EntityProvider(ResourceLocation subjectId, List<EntityPredicate> predicate) implements ProviderRegistrar {
         public EIEntityProvider build(final DataDrivenInteraction interaction) {
             if (predicate.isEmpty())
-                return (level, user, entity) -> EIResults.success(interaction);
+                return (level, user, entity) -> {
+                    interaction.test(user);
+                    return EIResults.success(interaction);
+                };
             return (level, user, entity) -> {
                 Tag tag = EIUtils.save(entity);
                 for (EntityPredicate predicate : predicate) {
                     if (!predicate.nbt.matches(tag)) return EIResults.optionalFailure(interaction, predicate.message);
                 }
+                interaction.test(user);
                 return EIResults.success(interaction);
             };
         }

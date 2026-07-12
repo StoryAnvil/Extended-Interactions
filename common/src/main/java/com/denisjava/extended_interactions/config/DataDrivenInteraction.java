@@ -5,6 +5,7 @@ import com.denisjava.extended_interactions.api.EIPlugin;
 import com.denisjava.extended_interactions.api.ExtInteraction;
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import com.denisjava.extended_interactions.impl.MenuTarget;
+import com.denisjava.extended_interactions.util.ThrowableEIResult;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -33,6 +34,20 @@ public class DataDrivenInteraction extends ExtInteraction {
     public void handleExecution(Player player, MenuTarget target) {
         for (DataDrivenAction action : actions) {
             action.handle(player, target);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "DataDrivenInteraction{" +
+                "id=" + id +
+                ", actions=" + actions +
+                '}';
+    }
+
+    public void test(Player player) throws ThrowableEIResult {
+        for (DataDrivenAction action : actions) {
+            action.test(this, player);
         }
     }
 
