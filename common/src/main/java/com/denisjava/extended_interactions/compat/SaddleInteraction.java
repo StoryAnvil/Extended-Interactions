@@ -26,8 +26,6 @@ public class SaddleInteraction extends JavaInteraction {
 
     @Override
     public void handleEntityExecution(Player player, Level level, Entity target) {
-        ((net.minecraft.world.entity.animal.pig.Pig) target).isSaddled();
-
         //? if <1.21.11 {
         if (target instanceof Saddleable saddleable) {
             if (!saddleable.isSaddled() && saddleable.isSaddleable() && !level.isClientSide()) {
