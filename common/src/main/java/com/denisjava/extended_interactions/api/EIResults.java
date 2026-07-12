@@ -47,23 +47,24 @@ public final class EIResults {
      * Failed provider result.
      * @param interaction Interaction that can not be used.
      * @param error Reason why interaction can not be used.
+     * @param code Error code. Usually null
      */
-    public static EIResultImpl.Result failure(ExtInteraction interaction, Component error) {
-        return new EIResultImpl.Failed(interaction, error);
+    public static EIResultImpl.Result failure(ExtInteraction interaction, Component error, String code) {
+        return new EIResultImpl.Failed(interaction, error, code);
     }
 
     public static EIResultImpl.Result failure(ExtInteraction interaction, String error) {
         return new EIResultImpl.Failed(interaction, Component.translatable(
-                interaction.getId().toLanguageKey("extinter") + '.' + error));
+                interaction.getId().toLanguageKey("extinter") + '.' + error), error);
     }
 
     public static void noCreative(ExtInteraction interaction, Player player) throws ThrowableEIResult {
-        if (player.hasInfiniteMaterials()) throw new ThrowableEIResult(failure(interaction, Component.translatable("extinter.generic.no_creative")));
+        if (player.hasInfiniteMaterials()) throw new ThrowableEIResult(failure(interaction, Component.translatable("extinter.generic.no_creative"), "no_creative"));
     }
 
     @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "OptionalIsPresent"})
     public static EIResultImpl.Result optionalFailure(ExtInteraction interaction, Optional<Component> error) {
-        if (error.isPresent()) return failure(interaction, error.get());
+        if (error.isPresent()) return failure(interaction, error.get(), null);
         return silentFailure(interaction);
     }
 }

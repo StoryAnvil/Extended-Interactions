@@ -100,13 +100,15 @@ public class RadialMenuScreen extends Screen {
     }
 
     private void bake() {
-        final int radius = EIClientConfig.HANDLER.instance().radialMenuRadius;
-        Map<String, ExtInteractionState> stateMap = EIClientConfig.HANDLER.instance().interactions;
+        EIClientConfig config = EIClientConfig.HANDLER.instance();
+        final int radius = config.radialMenuRadius;
+        Map<String, ExtInteractionState> stateMap = config.interactions;
 
         successfulResults = successfulResults.stream().filter(s ->
                 stateMap.get(s.interaction.getId().toString()) != ExtInteractionState.HIDE).toList();
         failedResults = failedResults.stream().filter(s ->
-                stateMap.getOrDefault(s.interaction.getId().toString(), ExtInteractionState.DEFAULT) == ExtInteractionState.DEFAULT).toList();
+                stateMap.getOrDefault(s.interaction.getId().toString(), ExtInteractionState.DEFAULT) == ExtInteractionState.DEFAULT)
+                .filter(config::failureFilter).toList();
 
         successful = new ActionData[successfulResults.size()];
         for (int i = 0; i < successful.length; i++) {
@@ -121,7 +123,7 @@ public class RadialMenuScreen extends Screen {
             );
         }
 
-        if (!EIClientConfig.HANDLER.instance().displayFailed) {
+        if (!config.displayFailed) {
             failedResults = List.of();
         }
 

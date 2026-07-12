@@ -47,7 +47,7 @@ public class DebugPlugin implements EIPlugin {
     }
 
     private EIResultImpl.Result desyncTest(Level level, Player player, BlockPos pos, BlockState state) {
-        if (!level.isClientSide()) return EIResults.failure(DESYNC_TEST, Component.literal("Actually no"));
+        if (!level.isClientSide()) return EIResults.failure(DESYNC_TEST, Component.literal("Actually no"), "desync-test");
         return EIResults.success(DESYNC_TEST);
     }
 

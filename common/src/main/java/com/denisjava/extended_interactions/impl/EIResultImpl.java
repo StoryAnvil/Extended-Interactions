@@ -78,11 +78,13 @@ public class EIResultImpl {
     public final static class Failed extends Result implements NonEmptyResult {
         public final ExtInteraction interaction;
         public final Component error;
+        public final @Nullable String errorCode;
 
         @ApiStatus.Internal
-        public Failed(ExtInteraction interaction, Component error) {
+        public Failed(ExtInteraction interaction, Component error, @Nullable String errorCode) {
             this.interaction = interaction;
             this.error = error;
+            this.errorCode = errorCode;
         }
 
         @Override
@@ -92,6 +94,10 @@ public class EIResultImpl {
 
         public Component getError() {
             return error;
+        }
+
+        public @Nullable String getErrorCode() {
+            return errorCode;
         }
     }
 }

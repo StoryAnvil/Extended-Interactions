@@ -4,6 +4,7 @@ import com.denisjava.extended_interactions.EICommon;
 import com.denisjava.extended_interactions.api.EIPlugin;
 import com.denisjava.extended_interactions.api.ExtInteraction;
 import com.denisjava.extended_interactions.client.EIClient;
+import com.denisjava.extended_interactions.impl.EIResultImpl;
 import com.denisjava.extended_interactions.impl.EIYACLConfigFactoryImpl;
 import com.denisjava.extended_interactions.impl.ExtendedInteractionsImpl;
 import com.denisjava.extended_interactions.util.Lazy;
@@ -88,6 +89,15 @@ public class EIClientConfig {
             .controller(TickBoxControllerBuilder::create)
             .build());
 
+    public static final Lazy<Option<Boolean>> REPORT_NO_ITEM = new Lazy<>(() -> Option.<Boolean>createBuilder()
+            .name(translatable("extended_interactions.report_no_item"))
+            .description(OptionDescription.of(
+                    translatable("extended_interactions.report_no_item.help")
+            ))
+            .binding(true, () -> HANDLER.instance().reportNoItem, v -> HANDLER.instance().reportNoItem = v)
+            .controller(TickBoxControllerBuilder::create)
+            .build());
+
     /**
      * Generates screen for client and server EI config.
      */
@@ -129,7 +139,7 @@ public class EIClientConfig {
     }
 
     public static ConfigCategory generateClientVisCategory() {
-        OptionGroup.Builder b = OptionGroup.createBuilder()
+        OptionGroup.Builder hideInteractions = OptionGroup.createBuilder()
                 .name(translatable("extended_interactions.eis"))
                 .description(OptionDescription.of(translatable("extended_interactions.eis.help")));
 
@@ -138,9 +148,9 @@ public class EIClientConfig {
                 .stream().sorted(EIClientConfig::interactionSorter).toList()) {
             if (currentPlugin != i.getDeclaringPlugin()) {
                 currentPlugin = i.getDeclaringPlugin();
-                b.option(LabelOption.create(translatable(currentPlugin.getUID().toLanguageKey("ei_plugin"))));
+                hideInteractions.option(LabelOption.create(translatable(currentPlugin.getUID().toLanguageKey("ei_plugin"))));
             }
-            b.option(interactionStateOption(i));
+            hideInteractions.option(interactionStateOption(i));
         }
 
         return ConfigCategory.createBuilder()
@@ -152,7 +162,11 @@ public class EIClientConfig {
                         .option(RADIAL_MENU_RADIUS.get())
                         .option(DISPLAY_FAILED.get())
                         .build())
-                .group(b.build())
+                .group(OptionGroup.createBuilder()
+                        .name(translatable("extended_interactions.report"))
+                        .option(REPORT_NO_ITEM.get())
+                        .build())
+                .group(hideInteractions.build())
                 .build();
     }
 
@@ -213,6 +227,11 @@ public class EIClientConfig {
     public boolean displayFailed = true;
 
     @SerialEntry(
+            comment = "Display interactions that failed due to missing items"
+    )
+    public boolean reportNoItem = true;
+
+    @SerialEntry(
             comment = """
                     Client-side disabled interactions.
                     Interaction id <-> DEFAULT/HIDE/HIDE_FAILURES
@@ -229,5 +248,9 @@ public class EIClientConfig {
 
     private static int interactionSorter(ExtInteraction i1, ExtInteraction i2) {
         return i1.getDeclaringPlugin().getUID().compareTo(i2.getDeclaringPlugin().getUID());
+    }
+
+    public boolean failureFilter(EIResultImpl.Failed failed) {
+        return reportNoItem || !failed.errorCode.equals("no_item");
     }
 }

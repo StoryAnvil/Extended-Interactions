@@ -55,6 +55,7 @@ public class ExtendedInteractionsImpl {
     public static final StreamCodec<RegistryFriendlyByteBuf, EIResultImpl.Failed> FAILED_STREAM_CODEC = StreamCodec.composite(
             INTERACTION_STREAM_CODEC, EIResultImpl.Failed::getInteraction,
             ComponentSerialization.STREAM_CODEC, EIResultImpl.Failed::getError,
+            ByteBufCodecs.STRING_UTF8, EIResultImpl.Failed::getErrorCode,
             EIResultImpl.Failed::new
     );
 

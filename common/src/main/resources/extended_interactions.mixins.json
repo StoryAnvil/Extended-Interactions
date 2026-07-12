@@ -5,6 +5,7 @@
     "refmap": "${modId}.refmap.json",
     "compatibilityLevel": "JAVA_18",
     "mixins": [
+        "EIVillager",
         "InventoryMixin",
         "PlayerMixin"
     ],
