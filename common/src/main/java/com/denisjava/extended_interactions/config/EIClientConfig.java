@@ -17,6 +17,7 @@ import dev.isxander.yacl3.api.controller.TickBoxControllerBuilder;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -184,7 +185,8 @@ public class EIClientConfig {
                 .description(OptionDescription.of(
                         translatable("extended_interactions.inter_toggle", interaction.getName()),
                         translatable("extended_interactions.inter_info", translatable(interaction.getDeclaringPlugin().getUID().toLanguageKey("ei_plugin")),
-                                Component.literal(interaction.getDeclaringPlugin().getDeclaringModId()))
+                                Component.literal(interaction.getDeclaringPlugin().getDeclaringModId())),
+                        Component.literal(interaction.getId().toString()).withStyle(ChatFormatting.GRAY)
                 ))
                 .controller(opt -> EnumControllerBuilder.create(opt)
                         .enumClass(ExtInteractionState.class))

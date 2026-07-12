@@ -50,3 +50,4 @@ runs
 mods.txt
 .venv
 publish.sh
+testserver.py

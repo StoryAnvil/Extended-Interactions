@@ -9,6 +9,7 @@ import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import com.denisjava.extended_interactions.impl.MenuTarget;
 import com.denisjava.extended_interactions.network.MenuResultPacket;
 import com.denisjava.extended_interactions.network.RunExtInteractionPacket;
+import com.denisjava.extended_interactions.util.EIUtils;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -21,8 +22,12 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RadialMenuScreen extends Screen {
     private static final ResourceLocation SLOT_SPRITE = ResourceLocation.withDefaultNamespace("gamemode_switcher/slot");
@@ -201,9 +206,11 @@ public class RadialMenuScreen extends Screen {
             return;
         }
         final ExtInteraction interaction = successfulResults.get(selectedInteraction).interaction;
-        EICommon.getPlatform().sendToServer(new RunExtInteractionPacket(
-                target.getEither(), interaction.getId()
-        ));
+        if (!interaction.isClientSide()) {
+            EICommon.getPlatform().sendToServer(new RunExtInteractionPacket(
+                    target.getEither(), interaction.getId()
+            ));
+        }
         EIClient.scheduleClient(() -> {
             interaction.handleExecution(Minecraft.getInstance().player, target);
         });
@@ -229,8 +236,16 @@ public class RadialMenuScreen extends Screen {
 
     public void handleMenuResult(MenuResultPacket packet) {
         serverReplied = true;
-        successfulResults = packet.good();
-        failedResults = packet.bad();
+
+        successfulResults = EIUtils.preservedSort(EIResultImpl.NonEmptyResult::getInteractionId, successfulResults, Stream.concat(
+                successfulResults.stream().filter(EIResultImpl.NonEmptyResult::isClientSide),
+                packet.good().stream()
+        )).toList();
+        failedResults = EIUtils.preservedSort(EIResultImpl.NonEmptyResult::getInteractionId, failedResults, Stream.concat(
+                failedResults.stream().filter(EIResultImpl.NonEmptyResult::isClientSide),
+                packet.bad().stream()
+        )).toList();
+
         bake();
     }
 

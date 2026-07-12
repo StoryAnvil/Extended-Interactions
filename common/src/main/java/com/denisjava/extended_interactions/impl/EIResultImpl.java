@@ -2,6 +2,7 @@ package com.denisjava.extended_interactions.impl;
 
 import com.denisjava.extended_interactions.api.ExtInteraction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,6 +24,14 @@ public class EIResultImpl {
     @ApiStatus.Internal
     public interface NonEmptyResult {
         ExtInteraction getInteraction();
+
+        default ResourceLocation getInteractionId() {
+            return getInteraction().getId();
+        }
+
+        default boolean isClientSide() {
+            return getInteraction().isClientSide();
+        }
     }
 
     public final static class Empty extends Result {
@@ -78,13 +87,13 @@ public class EIResultImpl {
     public final static class Failed extends Result implements NonEmptyResult {
         public final ExtInteraction interaction;
         public final Component error;
-        public final @Nullable String errorCode;
+        public final String errorCode;
 
         @ApiStatus.Internal
         public Failed(ExtInteraction interaction, Component error, @Nullable String errorCode) {
             this.interaction = interaction;
             this.error = error;
-            this.errorCode = errorCode;
+            this.errorCode = errorCode == null ? "" : errorCode;
         }
 
         @Override
@@ -96,7 +105,7 @@ public class EIResultImpl {
             return error;
         }
 
-        public @Nullable String getErrorCode() {
+        public @NotNull String getErrorCode() {
             return errorCode;
         }
     }

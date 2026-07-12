@@ -44,10 +44,12 @@ public class DebugPlugin implements EIPlugin {
         }
         registrar.blockProvider(Blocks.GRASS_BLOCK, constantProvider(DEBUG[0]));
         registrar.blockProvider(Blocks.GRASS_BLOCK, this::desyncTest);
+        registrar.blockProvider(Blocks.GRASS_BLOCK, constantProvider(DEBUG[1]));
+        registrar.blockProvider(Blocks.GRASS_BLOCK, constantProvider(DEBUG[2]));
     }
 
     private EIResultImpl.Result desyncTest(Level level, Player player, BlockPos pos, BlockState state) {
-        if (!level.isClientSide()) return EIResults.failure(DESYNC_TEST, Component.literal("Actually no"), "desync-test");
+        if (level.isClientSide()) return EIResults.failure(DESYNC_TEST, Component.literal("Actually no"), "desync-test");
         return EIResults.success(DESYNC_TEST);
     }
 

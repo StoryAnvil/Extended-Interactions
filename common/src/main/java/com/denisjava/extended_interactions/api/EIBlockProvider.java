@@ -18,7 +18,7 @@ public interface EIBlockProvider {
      * @param user Player requested the interaction
      * @param pos Block's position in level
      * @param state Block's state
-     * @return Provider result. See {@link EIResults#success(ExtInteraction)}, {@link EIResults#silentFailure(ExtInteraction)}, {@link EIResults#failure(ExtInteraction, Component)}
+     * @return Provider result. See {@link EIResults#success(ExtInteraction)}, {@link EIResults#silentFailure(ExtInteraction)}, {@link EIResults#failure(ExtInteraction, Component, String)}
      */
     @NotNull EIResultImpl.Result collectForBlock(Level level, Player user, BlockPos pos, BlockState state) throws ThrowableEIResult;
 }

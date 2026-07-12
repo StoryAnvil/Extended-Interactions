@@ -64,6 +64,13 @@ public abstract class ExtInteraction {
      */
     public abstract void handleExecution(Player player, MenuTarget target);
 
+    /**
+     * @return whether this interaction is client-side or not. If <code>true</code>, it won't be sent to server by any means.
+     */
+    public boolean isClientSide() {
+        return false;
+    }
+
     public interface SimpleProvider {
         void providerCheck(Player player) throws ThrowableEIResult;
     }

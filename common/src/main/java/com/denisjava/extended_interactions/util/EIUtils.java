@@ -11,7 +11,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.io.File;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class EIUtils {
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -54,5 +59,19 @@ public class EIUtils {
         entity.save(ctx);
         return ctx.buildResult();
         *///?}
+    }
+
+    /**
+     * Sorts provided stream same way as original list is sorted.<br>
+     * For example if original list is [A, B, D, C, Q] and unordered stream is [D, Q, B]
+     * result will be [B, D, Q].
+     * @param mapper Function that maps values to unique ids. For example {@link Object#hashCode()}
+     * @param original Original list of values. Unordered stream will be sorted like this list
+     * @param unordered Stream to sort
+     * @return Sorted stream
+     */
+    public static <R, INDEX> Stream<R> preservedSort(Function<R, INDEX> mapper, List<R> original, Stream<R> unordered) {
+        List<INDEX> indices = original.stream().map(mapper).toList();
+        return unordered.sorted(Comparator.comparingInt(o -> indices.indexOf(mapper.apply(o))));
     }
 }

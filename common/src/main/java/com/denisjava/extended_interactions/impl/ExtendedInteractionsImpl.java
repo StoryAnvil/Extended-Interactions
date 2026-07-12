@@ -116,7 +116,7 @@ public class ExtendedInteractionsImpl {
                 }
             }
         }
-
+        if (player.level().isClientSide()) return collector.reversed();
         return collector;
     }
 
@@ -145,6 +145,7 @@ public class ExtendedInteractionsImpl {
             }
         }
 
+        if (player.level().isClientSide()) return collector.reversed();
         return collector;
     }
 
