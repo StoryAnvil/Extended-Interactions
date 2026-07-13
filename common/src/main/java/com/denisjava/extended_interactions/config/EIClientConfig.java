@@ -321,6 +321,12 @@ public class EIClientConfig {
         }
         return null;
     }
+    public ConfiguredSubmenu getPendingSubmenuByName(String name) {
+        for (ConfiguredSubmenu submenu : SUBMENUES.get().pendingValue()) {
+            if (submenu.name().equals(name)) return submenu;
+        }
+        return null;
+    }
 
     private static void predictInteractionsListener(Option<Boolean> booleanOption, OptionEventListener.Event event) {
         ALLOW_PREDICT_USAGE.get().setAvailable(booleanOption.pendingValue());

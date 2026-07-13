@@ -185,7 +185,7 @@ public record ConfiguredSubmenu(String name, Item icon) {
 
         @Override
         public boolean isValueValid(String value) {
-            for (ConfiguredSubmenu submenu : EIClientConfig.HANDLER.instance().submenus) {
+            for (ConfiguredSubmenu submenu : EIClientConfig.SUBMENUES.get().pendingValue()) {
                 if (submenu.name.equals(value)) return true;
             }
             return false;
@@ -195,7 +195,7 @@ public record ConfiguredSubmenu(String name, Item icon) {
         protected String getValidValue(String value, int offset) {
             if (offset == -1) return getString();
             String q = value.toLowerCase();
-            return EIClientConfig.HANDLER.instance().submenus.stream().map(ConfiguredSubmenu::name)
+            return EIClientConfig.SUBMENUES.get().pendingValue().stream().map(ConfiguredSubmenu::name)
                     .filter(s -> s.toLowerCase().contains(q)).skip(offset).findFirst().orElseGet(this::getString);
         }
 
@@ -228,15 +228,16 @@ public record ConfiguredSubmenu(String name, Item icon) {
         @Override
         public List<String> computeMatchingValues() {
             String q = inputField.toLowerCase();
-            return EIClientConfig.HANDLER.instance().submenus.stream().filter(s -> s.name.toLowerCase().contains(q))
+            return EIClientConfig.SUBMENUES.get().pendingValue().stream().filter(s -> s.name.toLowerCase().contains(q))
                     .map(ConfiguredSubmenu::name).toList();
         }
 
         @Override
         protected void renderDropdownEntry(GuiGraphics graphics, Dimension<Integer> entryDimension, String id) {
             super.renderDropdownEntry(graphics, entryDimension, id);
+            ConfiguredSubmenu submenu = EIClientConfig.HANDLER.instance().getPendingSubmenuByName(id);
             graphics.renderFakeItem(
-                    new ItemStack(EIClientConfig.HANDLER.instance().getSubmenuByName(id).icon),
+                    new ItemStack(submenu != null ? submenu.icon : Items.BARRIER),
                     entryDimension.xLimit() - 2,
                     entryDimension.y() + 1
             );
@@ -244,7 +245,8 @@ public record ConfiguredSubmenu(String name, Item icon) {
 
         @Override
         public String getString(String id) {
-            return id;
+            ConfiguredSubmenu submenu = EIClientConfig.HANDLER.instance().getPendingSubmenuByName(id);
+            return submenu == null ? "Deleted submenu" : submenu.name;
         }
 
         @Override
