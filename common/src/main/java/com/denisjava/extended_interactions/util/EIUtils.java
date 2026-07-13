@@ -63,8 +63,8 @@ public class EIUtils {
 
     /**
      * Sorts provided stream same way as original list is sorted.<br>
-     * For example if original list is [A, B, D, C, Q] and unordered stream is [D, Q, B]
-     * result will be [B, D, Q].
+     * For example if original list is [Z, A, B, D, C, Q] and unordered stream is [D, Q, Z, B]
+     * result will be [Z, B, D, Q].
      * @param mapper Function that maps values to unique ids. For example {@link Object#hashCode()}
      * @param original Original list of values. Unordered stream will be sorted like this list
      * @param unordered Stream to sort

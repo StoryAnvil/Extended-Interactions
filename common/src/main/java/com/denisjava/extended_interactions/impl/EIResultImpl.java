@@ -24,14 +24,6 @@ public class EIResultImpl {
     @ApiStatus.Internal
     public interface NonEmptyResult {
         ExtInteraction getInteraction();
-
-        default ResourceLocation getInteractionId() {
-            return getInteraction().getId();
-        }
-
-        default boolean isClientSide() {
-            return getInteraction().isClientSide();
-        }
     }
 
     public final static class Empty extends Result {
@@ -39,7 +31,7 @@ public class EIResultImpl {
         public Empty() {}
     }
 
-    public final static class Successful extends Result implements NonEmptyResult {
+    public final static class Successful extends Result implements NonEmptyResult, RadialMenuButton {
         public final ExtInteraction interaction;
         public final @Nullable String iconOverride;
 
@@ -67,6 +59,26 @@ public class EIResultImpl {
 
         public @NotNull Optional<String> getOptionalIconOverride() {
             return Optional.ofNullable(iconOverride);
+        }
+
+        @Override
+        public Component getName() {
+            return interaction.getName();
+        }
+
+        @Override
+        public ExtInteractionIcon getIcon() {
+            return iconOverride == null ? interaction.getIcon() : interaction.getIcon(iconOverride);
+        }
+
+        @Override
+        public boolean isClientSide() {
+            return interaction.isClientSide();
+        }
+
+        @Override
+        public ResourceLocation getId() {
+            return interaction.getId();
         }
     }
 

@@ -1,15 +1,14 @@
 package com.denisjava.extended_interactions.client;
 
 import com.denisjava.extended_interactions.EICommon;
-import com.denisjava.extended_interactions.api.ExtInteraction;
 import com.denisjava.extended_interactions.config.EIClientConfig;
 import com.denisjava.extended_interactions.config.ExtInteractionState;
 import com.denisjava.extended_interactions.impl.EIResultImpl;
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import com.denisjava.extended_interactions.impl.MenuTarget;
+import com.denisjava.extended_interactions.impl.RadialMenuButton;
 import com.denisjava.extended_interactions.network.MenuResultPacket;
 import com.denisjava.extended_interactions.network.RunExtInteractionPacket;
-import com.denisjava.extended_interactions.util.EIUtils;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -22,18 +21,18 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class RadialMenuScreen extends Screen {
     private static final ResourceLocation SLOT_SPRITE = ResourceLocation.withDefaultNamespace("gamemode_switcher/slot");
     private static final ResourceLocation SELECTION_SPRITE = ResourceLocation.withDefaultNamespace("gamemode_switcher/selection");
     private static final ResourceLocation NO_OPTIONS_SPRITE = EICommon.id("no");
     private final Component noOptions = Component.translatable("gui.extended_interactions.no_options");
+
+    RadialMenuData data;
+    private List<RadialMenuButton> original;
+
     private final MenuTarget target;
     private List<EIResultImpl.Successful> successfulResults = List.of();
     private List<EIResultImpl.Failed> failedResults = List.of();
@@ -45,6 +44,24 @@ public class RadialMenuScreen extends Screen {
     public RadialMenuScreen(MenuTarget target) {
         super(Component.empty());
         this.target = target;
+    }
+
+    @Override
+    protected void init() {
+        // Predict interactions on client
+        EIClientConfig config = EIClientConfig.HANDLER.instance();
+        if (config.predictInteractions) {
+            Pair<RadialMenuData, List<RadialMenuButton>> p = RadialMenuData.createPrediction(target);
+            data = p.getFirst();
+            original = p.getSecond();
+        } else {
+            data = RadialMenuData.createEmpty();
+            original = List.of();
+        }
+        onDataUpdate();
+
+        // Request interactions from server
+        EICommon.getPlatform().sendToServer(target.createRequest());
     }
 
     @Override
@@ -88,43 +105,45 @@ public class RadialMenuScreen extends Screen {
         }
     }
 
-    @Override
-    protected void init() {
-        // Predict interactions on client
-        EIClientConfig instance = EIClientConfig.HANDLER.instance();
-        if (instance.predictInteractions) {
-            Pair<List<EIResultImpl.Successful>, List<EIResultImpl.Failed>> clientSideResult = target.collectClientSide(Minecraft.getInstance().player);
-            successfulResults = clientSideResult.getFirst();
-            failedResults = clientSideResult.getSecond();
-            serverReplied = instance.allowPredictUsage;
-        }
-        bake();
-
-        // Request interactions from server
-        EICommon.getPlatform().sendToServer(target.createRequest());
-    }
-
-    private void bake() {
+    /**
+     * Prepares rendering data for current {@link RadialMenuScreen#data}
+     */
+    void onDataUpdate() {
         EIClientConfig config = EIClientConfig.HANDLER.instance();
         final int radius = config.radialMenuRadius;
         Map<String, ExtInteractionState> stateMap = config.interactions;
 
-        successfulResults = successfulResults.stream().filter(s ->
-                stateMap.get(s.interaction.getId().toString()) != ExtInteractionState.HIDE).toList();
-        failedResults = failedResults.stream().filter(s ->
-                stateMap.getOrDefault(s.interaction.getId().toString(), ExtInteractionState.DEFAULT) == ExtInteractionState.DEFAULT)
-                .filter(config::failureFilter).toList();
+        legacy: {
+            if (true) break legacy;
+            successfulResults = successfulResults.stream().filter(s ->
+                    stateMap.get(s.interaction.getId().toString()) != ExtInteractionState.HIDE).toList();
+            failedResults = failedResults.stream().filter(s ->
+                            stateMap.getOrDefault(s.interaction.getId().toString(), ExtInteractionState.DEFAULT) == ExtInteractionState.DEFAULT)
+                    .filter(config::failureFilter).toList();
 
-        successful = new ActionData[successfulResults.size()];
+            successful = new ActionData[successfulResults.size()];
+            for (int i = 0; i < successful.length; i++) {
+                EIResultImpl.Successful result = successfulResults.get(i);
+                double angle = (float) i / successful.length * Math.PI * 2;
+
+                successful[i] = new ActionData(
+                        result.iconOverride == null ? result.interaction.getIcon() : result.interaction.getIcon(result.iconOverride),
+                        Math.toIntExact(Math.round(Math.sin(angle) * radius)),
+                        Math.toIntExact(Math.round(-Math.cos(angle) * radius)),
+                        result.interaction.getName()
+                );
+            }
+        }
+
+        successful = new ActionData[data.getButtons().size()];
         for (int i = 0; i < successful.length; i++) {
-            EIResultImpl.Successful result = successfulResults.get(i);
             double angle = (float) i / successful.length * Math.PI * 2;
-
+            RadialMenuButton button = data.getButtons().get(i);
             successful[i] = new ActionData(
-                    result.iconOverride == null ? result.interaction.getIcon() : result.interaction.getIcon(result.iconOverride),
+                    button.getIcon(),
                     Math.toIntExact(Math.round(Math.sin(angle) * radius)),
                     Math.toIntExact(Math.round(-Math.cos(angle) * radius)),
-                    result.interaction.getName()
+                    button.getName()
             );
         }
 
@@ -201,20 +220,23 @@ public class RadialMenuScreen extends Screen {
     }
 
     private void submit() {
-        if (selectedInteraction == -1) {
-            onClose();
-            return;
-        }
-        final ExtInteraction interaction = successfulResults.get(selectedInteraction).interaction;
-        if (!interaction.isClientSide()) {
-            EICommon.getPlatform().sendToServer(new RunExtInteractionPacket(
-                    target.getEither(), interaction.getId()
-            ));
-        }
-        EIClient.scheduleClient(() -> {
-            interaction.handleExecution(Minecraft.getInstance().player, target);
-        });
-        onClose();
+        if (selectedInteraction != -1) {
+            RadialMenuButton button = data.getButtons().get(selectedInteraction);
+
+            // Execute as a ExtInteraction
+            if (button instanceof EIResultImpl.Successful s) {
+                if (!s.isClientSide())
+                    EICommon.getPlatform().sendToServer(new RunExtInteractionPacket(
+                            target.getEither(), s.interaction.getId()
+                    ));
+                EIClient.scheduleClient(() -> {
+                    s.interaction.handleExecution(Minecraft.getInstance().player, target);
+                });
+            }
+            if (button instanceof ClientRadialMenuButton c) {
+                c.executeClientSide(this);
+            } else onClose();
+        } else onClose();
     }
 
     //? if >=1.21.11 {
@@ -234,19 +256,14 @@ public class RadialMenuScreen extends Screen {
         // NO OP
     }
 
+    /**
+     * Called when {@link MenuResultPacket} is received while this screen is opened
+     */
     public void handleMenuResult(MenuResultPacket packet) {
         serverReplied = true;
-
-        successfulResults = EIUtils.preservedSort(EIResultImpl.NonEmptyResult::getInteractionId, successfulResults, Stream.concat(
-                successfulResults.stream().filter(EIResultImpl.NonEmptyResult::isClientSide),
-                packet.good().stream()
-        )).toList();
-        failedResults = EIUtils.preservedSort(EIResultImpl.NonEmptyResult::getInteractionId, failedResults, Stream.concat(
-                failedResults.stream().filter(EIResultImpl.NonEmptyResult::isClientSide),
-                packet.bad().stream()
-        )).toList();
-
-        bake();
+        data = RadialMenuData.createMerged(original, packet.good(), packet.bad());
+        original = null;
+        onDataUpdate();
     }
 
     record ActionData(ExtInteractionIcon icon, int x, int y, Component name) { }

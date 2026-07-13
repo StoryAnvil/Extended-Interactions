@@ -20,13 +20,17 @@ import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
 import static com.denisjava.extended_interactions.EICommon.id;
+import static net.minecraft.network.chat.Component.literal;
 import static net.minecraft.network.chat.Component.translatable;
 
 public class EIClientConfig {
@@ -55,7 +59,7 @@ public class EIClientConfig {
             .description(OptionDescription.of(
                     translatable("extended_interactions.client_prefire.help")
             ))
-            .binding(true, () -> HANDLER.instance().allowPredictUsage, v -> HANDLER.instance().allowPredictUsage = v)
+            .binding(false, () -> HANDLER.instance().allowPredictUsage, v -> HANDLER.instance().allowPredictUsage = v)
             .controller(TickBoxControllerBuilder::create)
             .available(HANDLER.instance().predictInteractions)
             .build());
@@ -99,6 +103,16 @@ public class EIClientConfig {
             .controller(TickBoxControllerBuilder::create)
             .build());
 
+    public static final Lazy<ListOption<ConfiguredSubmenu>> SUBMENUES = new Lazy<>(() -> ListOption.<ConfiguredSubmenu>createBuilder()
+            .name(translatable("extended_interactions.submenues"))
+            .description(OptionDescription.of(
+                    translatable("extended_interactions.submenues.help")
+            ))
+            .binding(List.of(), () -> HANDLER.instance().submenus, v -> HANDLER.instance().submenus = v)
+            .controller(ConfiguredSubmenu::controller)
+            .initial(ConfiguredSubmenu::new)
+            .build());
+
     /**
      * Generates screen for client and server EI config.
      */
@@ -106,7 +120,9 @@ public class EIClientConfig {
         return YetAnotherConfigLib.createBuilder()
                 .title(translatable("extended_interactions.config"))
                 .category(EIClientConfig::generateClientVisCategory)
+                .category(EIClientConfig::generateClientCategoryCategory)
                 .category(EIClientConfig::generateClientFuncCategory)
+                .save(HANDLER::save)
                 .build().generateScreen(parent);
     }
 
@@ -171,6 +187,41 @@ public class EIClientConfig {
                 .build();
     }
 
+    public static ConfigCategory generateClientCategoryCategory() {
+        OptionGroup.Builder interactionGroups = OptionGroup.createBuilder()
+                .name(translatable("extended_interactions.submenu_binds"));
+
+        EIPlugin currentPlugin = null;
+        for (ExtInteraction interaction : ExtendedInteractionsImpl.getAllInteractions()
+                .stream().sorted(EIClientConfig::interactionSorter).toList()) {
+            if (currentPlugin != interaction.getDeclaringPlugin()) {
+                currentPlugin = interaction.getDeclaringPlugin();
+                interactionGroups.option(LabelOption.create(translatable(currentPlugin.getUID().toLanguageKey("ei_plugin"))));
+            }
+            final String id = interaction.getId().toString();
+            interactionGroups.option(Option.<String>createBuilder()
+                            .name(interaction.getName())
+                            .description(OptionDescription.of(
+                                    translatable("extended_interactions.inter_info", translatable(interaction.getDeclaringPlugin().getUID().toLanguageKey("ei_plugin")),
+                                            Component.literal(interaction.getDeclaringPlugin().getDeclaringModId())),
+                                    Component.literal(interaction.getId().toString()).withStyle(ChatFormatting.GRAY)
+                            ))
+                            .controller(ConfiguredSubmenu::selectorController)
+                            .binding("", () -> HANDLER.instance().submenuBinds.getOrDefault(id, ""), v -> {
+                                if (v.isEmpty()) HANDLER.instance().submenuBinds.remove(id);
+                                else HANDLER.instance().submenuBinds.put(id, v);
+                            })
+                    .build());
+        }
+
+        return ConfigCategory.createBuilder()
+                .name(translatable("extended_interactions.client_category"))
+                .tooltip(translatable("extended_interactions.client_category.tooltip"))
+                .group(SUBMENUES.get())
+                .group(interactionGroups.build())
+                .build();
+    }
+
     private static OptionGroup keyBinds() {
         return OptionGroup.createBuilder()
                 .name(translatable("extended_interactions.binds"))
@@ -216,7 +267,7 @@ public class EIClientConfig {
                     Allows picking interaction in radial menu before server replies with actual list.
                     This might help if network latency is significant, but may cause issues if server's interaction list does not match."""
     )
-    public boolean allowPredictUsage = true;
+    public boolean allowPredictUsage = false;
 
     @SerialEntry(
             comment = "Radius of radial menu in gui-scaled pixels"
@@ -243,6 +294,33 @@ public class EIClientConfig {
                     """
     )
     public Map<String, ExtInteractionState> interactions = new HashMap<>();
+
+    @SerialEntry(
+            comment = "Do not collapse interactions to submenu if all of actions belong to same submenu"
+    ) // TODO: Add to config UI
+    public boolean dontCollapseToSingleCategory = true;
+
+    @SerialEntry(
+            comment = "Do not collapse interactions to submenu if this submenu only has one available interaction"
+    ) // TODO: Add to config UI
+    public boolean expandSingleItemCategories = true;
+
+    @SerialEntry(
+            comment = "Use ingame config ui"
+    )
+    public List<ConfiguredSubmenu> submenus = new ArrayList<>();
+
+    @SerialEntry(
+            comment = "Use ingame config ui"
+    )
+    public Map<String, String> submenuBinds = new HashMap<>();
+
+    public ConfiguredSubmenu getSubmenuByName(String name) {
+        for (ConfiguredSubmenu submenu : submenus) {
+            if (submenu.name().equals(name)) return submenu;
+        }
+        return null;
+    }
 
     private static void predictInteractionsListener(Option<Boolean> booleanOption, OptionEventListener.Event event) {
         ALLOW_PREDICT_USAGE.get().setAvailable(booleanOption.pendingValue());
