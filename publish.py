@@ -60,13 +60,11 @@ def create_version(version_code: str, version_type: str, changelog: str, game_ve
 def main():
     version = input("Version code (example 1.0.0): ")
     version_type = input("Version type (example release): ")
-    changelog = ""
-    print("Changelog (type END to stop):")
-    while True:
-        line = input()
-        if line == "END":
-            break
-        changelog += line + "\n"
+    with open("changelog.md", "r", encoding="utf8") as fr:
+        changelog = fr.read()
+    print(changelog)
+    if input("Accept this changelog? [y/N] ").lower() != "y":
+        return
 
     for mc in VERSIONS:
         for loader in VERSIONS[mc]:
