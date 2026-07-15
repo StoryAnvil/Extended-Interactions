@@ -1,6 +1,8 @@
 package com.denisjava.extended_interactions.network;
 
-import com.denisjava.extended_interactions.impl.EIResultImpl;
+import com.denisjava.extended_interactions.api.providers.EIResult;
+import com.denisjava.extended_interactions.api.providers.FailedResult;
+import com.denisjava.extended_interactions.api.providers.SuccessfulResult;
 import com.denisjava.extended_interactions.impl.ExtendedInteractionsImpl;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -13,9 +15,9 @@ import java.util.List;
 
 import static com.denisjava.extended_interactions.EICommon.id;
 
-public record MenuResultPacket(List<EIResultImpl.Successful> good, List<EIResultImpl.Failed> bad) implements CustomPacketPayload {
-    public static MenuResultPacket create(List<EIResultImpl.Result> results) {
-        Pair<List<EIResultImpl.Successful>, List<EIResultImpl.Failed>> sorted = ExtendedInteractionsImpl.sort(results);
+public record MenuResultPacket(List<SuccessfulResult> good, List<FailedResult> bad) implements CustomPacketPayload {
+    public static MenuResultPacket create(List<EIResult> results) {
+        Pair<List<SuccessfulResult>, List<FailedResult>> sorted = ExtendedInteractionsImpl.sort(results);
         return new MenuResultPacket(sorted.getFirst(), sorted.getSecond());
     }
 

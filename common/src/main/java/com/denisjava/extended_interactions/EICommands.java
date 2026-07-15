@@ -1,6 +1,8 @@
 package com.denisjava.extended_interactions;
 
-import com.denisjava.extended_interactions.impl.EIResultImpl;
+import com.denisjava.extended_interactions.api.providers.EIResult;
+import com.denisjava.extended_interactions.api.providers.FailedResult;
+import com.denisjava.extended_interactions.api.providers.SuccessfulResult;
 import com.denisjava.extended_interactions.impl.ExtendedInteractionsImpl;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
@@ -16,7 +18,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 //? if >=1.21.11
-//import net.minecraft.server.permissions.Permissions;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.entity.Entity;
 
 import java.util.Collection;
@@ -29,9 +31,9 @@ public class EICommands {
     public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, Commands.CommandSelection commandSelection) {
         dispatcher.register(literal("extended_interactions")
                 //? if >=1.21.11 {
-                /*.requires(css -> css.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
-                *///?} else
-                .requires(css -> css.hasPermission(2))
+                .requires(css -> css.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+                //?} else
+                //.requires(css -> css.hasPermission(2))
 
                 .then(literal("listResults")
                         .then(literal("block").then(argument("pos", BlockPosArgument.blockPos()).executes(EICommands::listBlock)))
@@ -54,23 +56,20 @@ public class EICommands {
         return 0;
     }
 
-    public static void listResults(CommandContext<CommandSourceStack> ctx, Collection<EIResultImpl.Result> results) {
+    public static void listResults(CommandContext<CommandSourceStack> ctx, Collection<EIResult> results) {
         if (results.isEmpty()) {
             ctx.getSource().sendSystemMessage(Component.translatable("debug.extended_interactions.no_results"));
             return;
         }
         ctx.getSource().sendSystemMessage(Component.translatable("debug.extended_interactions.results", results.size()));
-        for (EIResultImpl.Result result : results) {
+        for (EIResult result : results) {
             MutableComponent component = null;
-            if (result instanceof EIResultImpl.Successful success) {
-                component = Component.translatable("debug.extended_interactions.success", success.interaction.getId().toString(),
-                        success.iconOverride == null ? Component.literal("default").withStyle(ChatFormatting.GRAY) : success.iconOverride);
+            if (result instanceof SuccessfulResult success) {
+                component = Component.translatable("debug.extended_interactions.success", success.getInteraction().getId().toString(),
+                        success.getIconOverride() == null ? Component.literal("default").withStyle(ChatFormatting.GRAY) : success.getIconOverride());
             }
-            if (result instanceof EIResultImpl.SilentlyFailed sf) {
-                component = Component.translatable("debug.extended_interactions.silent_failure", sf.interaction.getId().toString());
-            }
-            if (result instanceof EIResultImpl.Failed fail) {
-                component = Component.translatable("debug.extended_interactions.failure", fail.interaction.getId().toString(), fail.error);
+            if (result instanceof FailedResult fail) {
+                component = Component.translatable("debug.extended_interactions.failure", fail.getInteraction().getId().toString(), fail.getReason(), fail.getErrorCode());
             }
             ctx.getSource().sendSystemMessage(Objects.requireNonNull(component, "bad result type"));
         }

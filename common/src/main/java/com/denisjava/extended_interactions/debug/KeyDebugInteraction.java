@@ -5,13 +5,13 @@ import com.denisjava.extended_interactions.api.JavaInteraction;
 import com.denisjava.extended_interactions.client.EIClient;
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class KeyDebugInteraction extends JavaInteraction {
-    public KeyDebugInteraction(ResourceLocation id, ExtInteractionIcon icon, EIPlugin declaringPlugin) {
+    public KeyDebugInteraction(Identifier id, ExtInteractionIcon icon, EIPlugin declaringPlugin) {
         super(id, icon, declaringPlugin);
     }
 

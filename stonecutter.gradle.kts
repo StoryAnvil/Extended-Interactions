@@ -10,4 +10,4 @@ stonecutter {
     }
 }
 
-stonecutter active "1.21.1"
+stonecutter active "1.21.11"

@@ -6,16 +6,16 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import static com.denisjava.extended_interactions.EICommon.id;
 
-public record RunExtInteractionPacket(Either<BlockPos, Integer> target, ResourceLocation interaction) implements CustomPacketPayload {
+public record RunExtInteractionPacket(Either<BlockPos, Integer> target, Identifier interaction) implements CustomPacketPayload {
     public static final Type<RunExtInteractionPacket> TYPE = new Type<>(id("run"));
     public static final StreamCodec<RegistryFriendlyByteBuf, RunExtInteractionPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.either(BlockPos.STREAM_CODEC, ByteBufCodecs.INT), RunExtInteractionPacket::target,
-            ResourceLocation.STREAM_CODEC, RunExtInteractionPacket::interaction,
+            Identifier.STREAM_CODEC, RunExtInteractionPacket::interaction,
             RunExtInteractionPacket::new
     );
 

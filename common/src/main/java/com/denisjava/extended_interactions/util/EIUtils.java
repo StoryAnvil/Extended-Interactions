@@ -50,15 +50,15 @@ public class EIUtils {
 
     public static CompoundTag save(Entity entity) {
         //? if <1.21.11 {
-        CompoundTag tag = new CompoundTag();
+        /*CompoundTag tag = new CompoundTag();
         entity.save(tag);
         return tag;
-        //?} else {
-        /*net.minecraft.world.level.storage.TagValueOutput ctx = net.minecraft.world.level.storage.TagValueOutput.createWithContext(
+        *///?} else {
+        net.minecraft.world.level.storage.TagValueOutput ctx = net.minecraft.world.level.storage.TagValueOutput.createWithContext(
                 net.minecraft.util.ProblemReporter.DISCARDING, entity.level().registryAccess());
         entity.save(ctx);
         return ctx.buildResult();
-        *///?}
+        //?}
     }
 
     /**

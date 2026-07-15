@@ -1,5 +1,7 @@
 package com.denisjava.extended_interactions.api;
 
+import com.denisjava.extended_interactions.api.providers.EIBlockProvider;
+import com.denisjava.extended_interactions.api.providers.EIEntityProvider;
 import net.minecraft.core.Holder;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;

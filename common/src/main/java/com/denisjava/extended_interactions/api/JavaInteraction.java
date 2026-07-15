@@ -3,14 +3,14 @@ package com.denisjava.extended_interactions.api;
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import com.denisjava.extended_interactions.impl.MenuTarget;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class JavaInteraction extends ExtInteraction {
-    public JavaInteraction(ResourceLocation id, ExtInteractionIcon icon, EIPlugin declaringPlugin) {
+    public JavaInteraction(Identifier id, ExtInteractionIcon icon, EIPlugin declaringPlugin) {
         super(id, icon, declaringPlugin);
     }
 

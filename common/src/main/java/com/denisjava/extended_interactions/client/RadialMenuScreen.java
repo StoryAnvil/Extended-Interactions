@@ -1,9 +1,10 @@
 package com.denisjava.extended_interactions.client;
 
 import com.denisjava.extended_interactions.EICommon;
+import com.denisjava.extended_interactions.api.providers.FailedResult;
+import com.denisjava.extended_interactions.api.providers.SuccessfulResult;
 import com.denisjava.extended_interactions.config.EIClientConfig;
 import com.denisjava.extended_interactions.config.ExtInteractionState;
-import com.denisjava.extended_interactions.impl.EIResultImpl;
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import com.denisjava.extended_interactions.impl.MenuTarget;
 import com.denisjava.extended_interactions.impl.RadialMenuButton;
@@ -15,27 +16,27 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 //? if >=1.21.11
-//import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
 
 public class RadialMenuScreen extends Screen {
-    private static final ResourceLocation SLOT_SPRITE = ResourceLocation.withDefaultNamespace("gamemode_switcher/slot");
-    private static final ResourceLocation SELECTION_SPRITE = ResourceLocation.withDefaultNamespace("gamemode_switcher/selection");
-    private static final ResourceLocation NO_OPTIONS_SPRITE = EICommon.id("no");
+    private static final Identifier SLOT_SPRITE = Identifier.withDefaultNamespace("gamemode_switcher/slot");
+    private static final Identifier SELECTION_SPRITE = Identifier.withDefaultNamespace("gamemode_switcher/selection");
+    private static final Identifier NO_OPTIONS_SPRITE = EICommon.id("no");
     private final Component noOptions = Component.translatable("gui.extended_interactions.no_options");
 
     RadialMenuData data;
     private List<RadialMenuButton> original;
 
     private final MenuTarget target;
-    private List<EIResultImpl.Successful> successfulResults = List.of();
-    private List<EIResultImpl.Failed> failedResults = List.of();
+    private List<SuccessfulResult> successfulResults = List.of();
+    private List<FailedResult> failedResults = List.of();
     private ActionData[] successful = new ActionData[0];
     private boolean serverReplied = false;
 
@@ -71,9 +72,9 @@ public class RadialMenuScreen extends Screen {
 
         if (successful.length == 0) {
             //? if >=1.21.11
-            //g.blitSprite(RenderPipelines.GUI_TEXTURED, NO_OPTIONS_SPRITE, centerX - 13, centerY - 13, 26, 26);
+            g.blitSprite(RenderPipelines.GUI_TEXTURED, NO_OPTIONS_SPRITE, centerX - 13, centerY - 13, 26, 26);
             //? if <1.21.11
-            g.blitSprite(NO_OPTIONS_SPRITE, centerX - 13, centerY - 13, 26, 26);
+            //g.blitSprite(NO_OPTIONS_SPRITE, centerX - 13, centerY - 13, 26, 26);
             g.drawString(font, noOptions, centerX - font.width(noOptions) / 2, centerY + 26, -1);
         }
 
@@ -81,26 +82,27 @@ public class RadialMenuScreen extends Screen {
             int i1 = centerY + s.y;
             int i2 = centerX + s.x;
             //? if >=1.21.11
-            //g.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_SPRITE, i2 - 13, i1 - 13, 26, 26);
+            g.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_SPRITE, i2 - 13, i1 - 13, 26, 26);
             //? if <1.21.11
-            g.blitSprite(SLOT_SPRITE, i2 - 13, i1 - 13, 26, 26);
+            //g.blitSprite(SLOT_SPRITE, i2 - 13, i1 - 13, 26, 26);
             s.icon.render16x16(g, font, i2 - 8, i1 - 8);
         }
         if (selectedInteraction != -1) {
             ActionData s = successful[selectedInteraction];
             //? if >=1.21.11
-            //g.blitSprite(RenderPipelines.GUI_TEXTURED, SELECTION_SPRITE, centerX + s.x - 13, centerY + s.y - 13, 26, 26);
+            g.blitSprite(RenderPipelines.GUI_TEXTURED, SELECTION_SPRITE, centerX + s.x - 13, centerY + s.y - 13, 26, 26);
             //? if <1.21.11
-            g.blitSprite(SELECTION_SPRITE, centerX + s.x - 13, centerY + s.y - 13, 26, 26);
+            //g.blitSprite(SELECTION_SPRITE, centerX + s.x - 13, centerY + s.y - 13, 26, 26);
             g.drawString(font, s.name, centerX - font.width(s.name) / 2, centerY - 4, -1);
         }
 
         int y = 5;
-        for (EIResultImpl.Failed result : failedResults) {
-            MutableComponent component = result.interaction.getName();
+        for (FailedResult result : failedResults) {
+            if (result.getReason() == null) continue;
+            MutableComponent component = result.getInteraction().getName();
             g.drawString(font, component, 5, y, -1);
             y += 10;
-            g.drawString(font, result.error.copy().withStyle(ChatFormatting.RED), 5, y, -1);
+            g.drawString(font, result.getReason().copy().withStyle(ChatFormatting.RED), 5, y, -1);
             y += 15;
         }
     }
@@ -113,27 +115,27 @@ public class RadialMenuScreen extends Screen {
         final int radius = config.radialMenuRadius;
         Map<String, ExtInteractionState> stateMap = config.interactions;
 
-        legacy: {
+        /*legacy: {
             if (true) break legacy;
             successfulResults = successfulResults.stream().filter(s ->
-                    stateMap.get(s.interaction.getId().toString()) != ExtInteractionState.HIDE).toList();
+                    stateMap.get(s.getInteraction().getId().toString()) != ExtInteractionState.HIDE).toList();
             failedResults = failedResults.stream().filter(s ->
-                            stateMap.getOrDefault(s.interaction.getId().toString(), ExtInteractionState.DEFAULT) == ExtInteractionState.DEFAULT)
+                            stateMap.getOrDefault(s.getInteraction().getId().toString(), ExtInteractionState.DEFAULT) == ExtInteractionState.DEFAULT)
                     .filter(config::failureFilter).toList();
 
             successful = new ActionData[successfulResults.size()];
             for (int i = 0; i < successful.length; i++) {
-                EIResultImpl.Successful result = successfulResults.get(i);
+                SuccessfulResult result = successfulResults.get(i);
                 double angle = (float) i / successful.length * Math.PI * 2;
 
                 successful[i] = new ActionData(
-                        result.iconOverride == null ? result.interaction.getIcon() : result.interaction.getIcon(result.iconOverride),
+                        result.getIconOverride() == null ? result.getInteraction().getIcon() : result.getInteraction().getIcon(result.getIconOverride()),
                         Math.toIntExact(Math.round(Math.sin(angle) * radius)),
                         Math.toIntExact(Math.round(-Math.cos(angle) * radius)),
-                        result.interaction.getName()
+                        result.getInteraction().getName()
                 );
             }
-        }
+        }*/
 
         successful = new ActionData[data.getButtons().size()];
         for (int i = 0; i < successful.length; i++) {
@@ -183,40 +185,40 @@ public class RadialMenuScreen extends Screen {
 
     @Override
     //? if <1.21.11 {
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+    /*public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         if (EIClient.OPEN_RADIAL.get().matches(keyCode, scanCode)) {
-    //?} else {
-    /*public boolean keyReleased(@NotNull net.minecraft.client.input.KeyEvent event) {
+    *///?} else {
+    public boolean keyReleased(@NotNull net.minecraft.client.input.KeyEvent event) {
         if (EIClient.OPEN_RADIAL.get().matches(event)) {
-    *///? }
+    //? }
             submit();
             return true;
         }
 
         //? if >=1.21.11
-        //return super.keyReleased(event);
+        return super.keyReleased(event);
         //? if <1.21.11
-        return super.keyReleased(keyCode, scanCode, modifiers);
+        //return super.keyReleased(keyCode, scanCode, modifiers);
     }
 
     @Override
     //? if >=1.21.11 {
-    /*public boolean mouseClicked(@NotNull net.minecraft.client.input.MouseButtonEvent event, boolean arg1) {
-    *///? } else {
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-    //? }
+    public boolean mouseClicked(@NotNull net.minecraft.client.input.MouseButtonEvent event, boolean arg1) {
+    //? } else {
+    /*public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    *///? }
         //? if >=1.21.11 {
-        /*if (event.button() == 0 && selectedInteraction != -1 && serverReplied) {
-        *///?} else
-        if (button == 0 && selectedInteraction != -1 && serverReplied) {
+        if (event.button() == 0 && selectedInteraction != -1 && serverReplied) {
+        //?} else
+        //if (button == 0 && selectedInteraction != -1 && serverReplied) {
             submit();
             return true;
         }
 
         //? if >=1.21.11 {
-        /*return super.mouseClicked(event, arg1);
-         *///? } else
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, arg1);
+         //? } else
+        //return super.mouseClicked(mouseX, mouseY, button);
     }
 
     private void submit() {
@@ -224,13 +226,13 @@ public class RadialMenuScreen extends Screen {
             RadialMenuButton button = data.getButtons().get(selectedInteraction);
 
             // Execute as a ExtInteraction
-            if (button instanceof EIResultImpl.Successful s) {
-                if (!s.isClientSide())
+            if (button instanceof SuccessfulResult s) {
+                if (!s.getInteraction().isClientSide())
                     EICommon.getPlatform().sendToServer(new RunExtInteractionPacket(
-                            target.getEither(), s.interaction.getId()
+                            target.getEither(), s.getInteraction().getId()
                     ));
                 EIClient.scheduleClient(() -> {
-                    s.interaction.handleExecution(Minecraft.getInstance().player, target);
+                    s.getInteraction().handleExecution(Minecraft.getInstance().player, target);
                 });
             }
             if (button instanceof ClientRadialMenuButton c) {
@@ -240,11 +242,11 @@ public class RadialMenuScreen extends Screen {
     }
 
     //? if >=1.21.11 {
-    /*@Override
+    @Override
     public boolean isInGameUi() {
         return true;
     }
-    *///?}
+    //?}
 
     @Override
     public boolean isPauseScreen() {
@@ -262,6 +264,7 @@ public class RadialMenuScreen extends Screen {
     public void handleMenuResult(MenuResultPacket packet) {
         serverReplied = true;
         data = RadialMenuData.createMerged(original, packet.good(), packet.bad());
+        failedResults = packet.bad();
         original = null;
         onDataUpdate();
     }

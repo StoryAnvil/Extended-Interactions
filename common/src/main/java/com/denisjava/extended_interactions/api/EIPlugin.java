@@ -1,7 +1,7 @@
 package com.denisjava.extended_interactions.api;
 
 import dev.isxander.yacl3.api.OptionGroup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Interface for all extended interactions plugins.<br>
@@ -35,7 +35,7 @@ public interface EIPlugin {
     /**
      * @return unique identifier for this plugin. Namespace must match {@link EIPlugin#getDeclaringModId}
      */
-    ResourceLocation getUID();
+    Identifier getUID();
 
     /**
      * Create client config options for this plugin.<br>

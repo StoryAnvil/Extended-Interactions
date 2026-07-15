@@ -48,7 +48,7 @@
     "key.category.extended_interactions.main": "Extended Interactions",
     "debug.extended_interactions.success": "§aHIT %s : icon=%s",
     "debug.extended_interactions.silent_failure": "§8SILENT %s",
-    "debug.extended_interactions.failure": "§cMISS %s : %s",
+    "debug.extended_interactions.failure": "§cMISS %s : %s [errcode: %s]",
     "debug.extended_interactions.no_results": "§7No results",
     "debug.extended_interactions.results": "Results (%s total):",
     "key.extended_interactions.open_radial": "Open radial menu",

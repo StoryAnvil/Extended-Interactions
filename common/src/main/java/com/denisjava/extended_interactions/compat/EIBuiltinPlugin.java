@@ -2,23 +2,25 @@ package com.denisjava.extended_interactions.compat;
 
 import com.denisjava.extended_interactions.EICommon;
 import com.denisjava.extended_interactions.api.*;
+import com.denisjava.extended_interactions.api.providers.EIResult;
+import com.denisjava.extended_interactions.api.providers.EIResultCollector;
 import com.denisjava.extended_interactions.config.CommandAction;
 import com.denisjava.extended_interactions.config.KeymappingAction;
 import com.denisjava.extended_interactions.config.UseItemAction;
-import com.denisjava.extended_interactions.impl.EIResultImpl;
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon.ItemStackIcon;
 import com.denisjava.extended_interactions.util.EIUtils;
 import com.denisjava.extended_interactions.util.ThrowableEIResult;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.*;
 //? if <1.21.11 {
-import net.minecraft.world.entity.Saddleable;
+/*import net.minecraft.world.entity.Saddleable;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.npc.AbstractVillager;
-//?} else {
-/*import net.minecraft.world.entity.animal.sheep.Sheep;
+*///?} else {
+import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.npc.villager.AbstractVillager;
-*///? }
+//? }
 import net.minecraft.world.entity.decoration.LeashFenceKnotEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +28,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
 import static com.denisjava.extended_interactions.EICommon.id;
-import static com.denisjava.extended_interactions.api.EIResults.*;
 
 @EIPluginClass
 public class EIBuiltinPlugin implements EIPlugin {
@@ -63,74 +64,117 @@ public class EIBuiltinPlugin implements EIPlugin {
     }
 
     @Override
-    public ResourceLocation getUID() {
+    public Identifier getUID() {
         return id("builtin");
+    }
+
+    private void noCreative(ExtInteraction interaction, Player player) throws ThrowableEIResult {
+        if (player.hasInfiniteMaterials())
+            EIResult.fail(interaction).addReason(Component.translatable("extinter.generic.no_creative"), "no_creative").throwNow();
     }
 
     // === SHEEP SHEARING ===
     private final ItemOnEntityInteraction SHEEP_SHEARING =
             new ItemOnEntityInteraction(id("mc/sheep_shearing"), new ItemStackIcon(Items.SHEARS), this, Items.SHEARS);
-    private EIResultImpl.Result sheepShearing(Level level, Player player, Entity entity) throws ThrowableEIResult {
-        if (!((Sheep) entity).readyForShearing()) return failure(SHEEP_SHEARING, "no_wool");
+    private void sheepShearing(EIResultCollector collector, Level level, Player player, Entity entity) throws ThrowableEIResult {
+        if (!((Sheep) entity).readyForShearing()) {
+            collector.add(EIResult.fail(SHEEP_SHEARING).addReason("no_wool"));
+            return;
+        }
         SHEEP_SHEARING.providerCheck(player);
-        return success(SHEEP_SHEARING);
+        collector.add(EIResult.success(SHEEP_SHEARING));
     }
 
     // === COW MILKING ===
     private final ItemOnEntityInteraction COW_MILKING =
             new ItemOnEntityInteraction(id("mc/cow_milking"), new ItemStackIcon(Items.MILK_BUCKET), this, Items.BUCKET);
-    private EIResultImpl.Result cowMilking(Level level, Player player, Entity entity) throws ThrowableEIResult {
+    private void cowMilking(EIResultCollector collector, Level level, Player player, Entity entity) throws ThrowableEIResult {
         noCreative(COW_MILKING, player); // bucket duplicates
         COW_MILKING.providerCheck(player);
-        return success(COW_MILKING);
+        collector.add(EIResult.success(COW_MILKING));
     }
 
     // === MOOSHROOM MILKING ===
     private final ItemOnEntityInteraction MOOSHROOM_SOUPING =
             new ItemOnEntityInteraction(id("mc/mooshroom_souping"), new ItemStackIcon(Items.MUSHROOM_STEW), this, Items.BOWL);
-    private EIResultImpl.Result mooshroomSouping(Level level, Player player, Entity entity) throws ThrowableEIResult {
+    private void mooshroomSouping(EIResultCollector collector, Level level, Player player, Entity entity) throws ThrowableEIResult {
         noCreative(MOOSHROOM_SOUPING, player); // bowl duplicates
         MOOSHROOM_SOUPING.providerCheck(player);
-        return success(MOOSHROOM_SOUPING);
+        collector.add(EIResult.success(MOOSHROOM_SOUPING));
     }
 
     // === LEASH ===
     private final LeashInteraction ATTACH_LEASH = new LeashInteraction(id("mc/attach_leash"), new ItemStackIcon(Items.LEAD), this);
     private final UnleashInteraction REMOVE_LEASH = new UnleashInteraction(id("mc/remove_leash"), new ItemStackIcon(Items.LEAD), this);
-    private EIResultImpl.Result leashProvider(Level level, Player player, Entity entity) throws ThrowableEIResult {
-        if (!(entity instanceof Leashable leashable)) return silentFailure(ATTACH_LEASH);
+    private void leashProvider(EIResultCollector collector, Level level, Player player, Entity entity) throws ThrowableEIResult {
+        if (!(entity instanceof Leashable leashable)) {
+            collector.add(EIResult.fail(ATTACH_LEASH));
+            return;
+        }
 
         if (leashable.isLeashed()) {
             if (leashable.getLeashHolder() instanceof LeashFenceKnotEntity || player.equals(leashable.getLeashHolder())) {
-                return success(REMOVE_LEASH);
+                collector.add(EIResult.success(REMOVE_LEASH));
+                return;
             }
-            return silentFailure(ATTACH_LEASH);
+            collector.add(EIResult.fail(ATTACH_LEASH));
+            return;
         }
-        if (!leashable.canBeLeashed()) return failure(ATTACH_LEASH, "nah");
-        if (EIUtils.findItem(player, Items.LEAD) == -1) return failure(ATTACH_LEASH, "no_item");
-        return success(ATTACH_LEASH);
+        if (!leashable.canBeLeashed()) {
+            collector.add(EIResult.fail(ATTACH_LEASH).addReason("nah"));
+            return;
+        }
+        if (EIUtils.findItem(player, Items.LEAD) == -1) {
+            collector.add(EIResult.fail(ATTACH_LEASH).addReason("no_item"));
+            return;
+        }
+        collector.add(EIResult.success(ATTACH_LEASH));
     }
 
     // == SADDLE ==
     private final SaddleInteraction EQUIP_SADDLE = new SaddleInteraction(id("mc/equip_saddle"), new ItemStackIcon(Items.SADDLE), this);
-    private EIResultImpl.Result saddleProvider(Level level, Player player, Entity entity) throws ThrowableEIResult {
+    private void saddleProvider(EIResultCollector collector, Level level, Player player, Entity entity) throws ThrowableEIResult {
         //? if <1.21.11 {
-        if (!(entity instanceof Saddleable saddleable)) return silentFailure(EQUIP_SADDLE);
-        if (saddleable.isSaddled()) return silentFailure(EQUIP_SADDLE);
-        if (!saddleable.isSaddleable()) return failure(EQUIP_SADDLE, "nah");
-        //? } else {
-        /*if (!(entity instanceof Mob mob)) return silentFailure(EQUIP_SADDLE);
-        if (mob.isSaddled()) return silentFailure(EQUIP_SADDLE);
-        if (!mob.isEquippableInSlot(new ItemStack(Items.SADDLE), EquipmentSlot.SADDLE)) return failure(EQUIP_SADDLE, "nah");
-        *///? }
-        if (EIUtils.findItem(player, Items.SADDLE) == -1) return failure(EQUIP_SADDLE, "no_item");
-        return success(EQUIP_SADDLE);
+        /*if (!(entity instanceof Saddleable saddleable)) {
+            collector.add(EIResult.fail(EQUIP_SADDLE));
+            return;
+        }
+        if (saddleable.isSaddled()) {
+            collector.add(EIResult.fail(EQUIP_SADDLE));
+            return;
+        }
+        if (!saddleable.isSaddleable()) {
+            collector.add(EIResult.fail(EQUIP_SADDLE).addReason("nah"));
+            return;
+        }
+        *///? } else {
+        if (!(entity instanceof Mob mob)) {
+            collector.add(EIResult.fail(EQUIP_SADDLE));
+            return;
+        }
+        if (mob.isSaddled()) {
+            collector.add(EIResult.fail(EQUIP_SADDLE));
+            return;
+        }
+        if (!mob.isEquippableInSlot(new ItemStack(Items.SADDLE), EquipmentSlot.SADDLE)) {
+            collector.add(EIResult.fail(EQUIP_SADDLE).addReason("nah"));
+            return;
+        }
+        //? }
+        if (EIUtils.findItem(player, Items.SADDLE) == -1) {
+            collector.add(EIResult.fail(EQUIP_SADDLE).addReason("no_item"));
+            return;
+        }
+        collector.add(EIResult.success(EQUIP_SADDLE));
     }
 
     // == TRADING ==
     private final VillagerTradeInteraction VILLAGER_TRADING = new VillagerTradeInteraction(id("mc/villager_trade"), new ItemStackIcon(Items.EMERALD), this);
-    private EIResultImpl.Result tradingProvider(Level level, Player player, Entity entity) throws ThrowableEIResult {
-        if (!level.isClientSide() && ((AbstractVillager) entity).getOffers().isEmpty()) return failure(VILLAGER_TRADING, "no_trades");
-        return success(VILLAGER_TRADING);
+    private void tradingProvider(EIResultCollector collector, Level level, Player player, Entity entity) throws ThrowableEIResult {
+        if (!level.isClientSide() && ((AbstractVillager) entity).getOffers().isEmpty()) {
+            collector.add(EIResult.fail(VILLAGER_TRADING).addReason("no_trades"));
+            return;
+        }
+        collector.add(EIResult.success(VILLAGER_TRADING));
     }
 }

@@ -1,10 +1,12 @@
 package com.denisjava.extended_interactions.client;
 
 import com.denisjava.extended_interactions.EICommon;
+import com.denisjava.extended_interactions.api.providers.EIResult;
+import com.denisjava.extended_interactions.api.providers.FailedResult;
+import com.denisjava.extended_interactions.api.providers.SuccessfulResult;
 import com.denisjava.extended_interactions.config.ConfiguredSubmenu;
 import com.denisjava.extended_interactions.config.EIClientConfig;
-import com.denisjava.extended_interactions.debug.DebugInteraction;
-import com.denisjava.extended_interactions.impl.EIResultImpl;
+import com.denisjava.extended_interactions.config.ExtInteractionState;
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import com.denisjava.extended_interactions.impl.MenuTarget;
 import com.denisjava.extended_interactions.impl.RadialMenuButton;
@@ -12,13 +14,12 @@ import com.denisjava.extended_interactions.util.EIUtils;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -86,7 +87,7 @@ public class RadialMenuData {
     }
 
     private static String getCategory(RadialMenuButton button) {
-        if (button instanceof EIResultImpl.NonEmptyResult r) {
+        if (button instanceof EIResult r) {
             String id = r.getInteraction().getId().toString();
             String category = EIClientConfig.HANDLER.instance().submenuBinds.get(id);
             if (category != null && EIClientConfig.HANDLER.instance().getSubmenuByName(category) != null)
@@ -129,8 +130,8 @@ public class RadialMenuData {
         }
 
         @Override
-        public ResourceLocation getId() {
-            return ResourceLocation.fromNamespaceAndPath("category", name);
+        public Identifier getId() {
+            return Identifier.fromNamespaceAndPath("category", name);
         }
 
         @Override
@@ -157,7 +158,7 @@ public class RadialMenuData {
         }
 
         @Override
-        public ResourceLocation getId() {
+        public Identifier getId() {
             return EICommon.id("back");
         }
     }
@@ -168,21 +169,27 @@ public class RadialMenuData {
     }
 
     public static Pair<RadialMenuData, List<RadialMenuButton>> createPrediction(MenuTarget target) {
-        Pair<List<EIResultImpl.Successful>, List<EIResultImpl.Failed>> result =
+        Pair<List<SuccessfulResult>, List<FailedResult>> result =
                 target.collectClientSide(Minecraft.getInstance().player);
 
-        List<RadialMenuButton> original = Collections.unmodifiableList(result.getFirst());
+        EIClientConfig config = EIClientConfig.HANDLER.instance();
+        List<RadialMenuButton> original = result.getFirst().stream()
+                .filter(r -> config.interactions.get(r.getInteraction().getId().toString()) != ExtInteractionState.HIDE)
+                .map(r -> (RadialMenuButton) r).toList();
         return new Pair<>(
                 new RadialMenuData(categorize(original)),
                 original
         );
     }
 
-    public static RadialMenuData createMerged(List<RadialMenuButton> original, List<EIResultImpl.Successful> good, List<EIResultImpl.Failed> bad) {
+    public static RadialMenuData createMerged(List<RadialMenuButton> original, List<SuccessfulResult> good, List<FailedResult> bad) {
+        EIClientConfig config = EIClientConfig.HANDLER.instance();
+
         // Order merged buttons as predicated buttons were
         original = categorize(EIUtils.preservedSort(RadialMenuButton::getId, original,
                         // Merge client-side buttons and buttons from server
-                        Stream.concat(original.stream().filter(RadialMenuButton::isClientSide), good.stream()))
+                        Stream.concat(original.stream().filter(RadialMenuButton::isClientSide), good.stream()
+                                .filter(r -> config.interactions.get(r.getInteraction().getId().toString()) != ExtInteractionState.HIDE)))
                 .toList());
         return new RadialMenuData(original);
     }

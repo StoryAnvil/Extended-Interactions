@@ -1,16 +1,18 @@
 package com.denisjava.extended_interactions.util;
 
-import com.denisjava.extended_interactions.impl.EIResultImpl;
+import com.denisjava.extended_interactions.api.providers.EIResult;
+import org.jetbrains.annotations.ApiStatus;
 
 public class ThrowableEIResult extends Exception {
-    private final EIResultImpl.Result result;
+    private final EIResult result;
 
-    public ThrowableEIResult(EIResultImpl.Result result) {
+    @ApiStatus.Internal
+    public ThrowableEIResult(EIResult result) {
         super("");
         this.result = result;
     }
 
-    public EIResultImpl.Result getResult() {
+    public EIResult getResult() {
         return result;
     }
 }

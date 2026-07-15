@@ -2,13 +2,13 @@ package com.denisjava.extended_interactions.impl;
 
 import com.denisjava.extended_interactions.EICommon;
 import com.denisjava.extended_interactions.api.*;
+import com.denisjava.extended_interactions.api.providers.*;
 import com.denisjava.extended_interactions.config.DataDrivenAction;
 import com.denisjava.extended_interactions.network.BlockMenuRequestPacket;
 import com.denisjava.extended_interactions.network.EntityMenuRequestPacket;
 import com.denisjava.extended_interactions.network.MenuResultPacket;
 import com.denisjava.extended_interactions.network.RunExtInteractionPacket;
 import com.denisjava.extended_interactions.util.EIProviderRegistry;
-import com.denisjava.extended_interactions.util.EIResultCollector;
 import com.denisjava.extended_interactions.util.EIUtils;
 import com.denisjava.extended_interactions.util.ThrowableEIResult;
 import com.mojang.datafixers.util.Pair;
@@ -20,7 +20,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -37,26 +37,28 @@ import java.util.stream.Stream;
 public class ExtendedInteractionsImpl {
     public static final EIProviderRegistry<EIBlockProvider> BLOCK_PROVIDERS = new EIProviderRegistry<>();
     public static final EIProviderRegistry<EIEntityProvider> ENTITY_PROVIDERS = new EIProviderRegistry<>();
-    private static final HashMap<ResourceLocation, ExtInteraction> INTERACTIONS = new HashMap<>();
-    private static final HashMap<ResourceLocation, MapCodec<? extends DataDrivenAction>> DD_ACTIONS = new HashMap<>();
+    private static final HashMap<Identifier, ExtInteraction> INTERACTIONS = new HashMap<>();
+    private static final HashMap<Identifier, MapCodec<? extends DataDrivenAction>> DD_ACTIONS = new HashMap<>();
     private static List<EIPlugin> ALL_PLUGINS = List.of();
     private static int frozen = 2;
 
-    public static final StreamCodec<ByteBuf, ExtInteraction> INTERACTION_STREAM_CODEC = ResourceLocation.STREAM_CODEC.map(identifier -> {
+    public static final StreamCodec<ByteBuf, ExtInteraction> INTERACTION_STREAM_CODEC = Identifier.STREAM_CODEC.map(identifier -> {
         ExtInteraction interaction = INTERACTIONS.get(identifier);
         if (interaction == null) throw new RuntimeException("Failed to decode interaction with id [" + identifier + "]. Maybe it does not exist on client?");
         return interaction;
     }, ExtInteraction::getId);
-    public static final StreamCodec<ByteBuf, EIResultImpl.Successful> SUCCESSFUL_STREAM_CODEC = StreamCodec.composite(
-            INTERACTION_STREAM_CODEC, EIResultImpl.Successful::getInteraction,
-            ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8), EIResultImpl.Successful::getOptionalIconOverride,
-            EIResultImpl.Successful::new
+    public static final StreamCodec<RegistryFriendlyByteBuf, SuccessfulResult> SUCCESSFUL_STREAM_CODEC = StreamCodec.composite(
+            INTERACTION_STREAM_CODEC, EIResult::getInteraction,
+            ComponentSerialization.OPTIONAL_STREAM_CODEC, SuccessfulResult::getOptionalNameOverride,
+            ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8), SuccessfulResult::getOptionalIconOverride,
+            ByteBufCodecs.optional(InteractionArgument.STREAM_CODEC.apply(ByteBufCodecs.list())), SuccessfulResult::getOptionalArguments,
+            SuccessfulResult::new
     );
-    public static final StreamCodec<RegistryFriendlyByteBuf, EIResultImpl.Failed> FAILED_STREAM_CODEC = StreamCodec.composite(
-            INTERACTION_STREAM_CODEC, EIResultImpl.Failed::getInteraction,
-            ComponentSerialization.STREAM_CODEC, EIResultImpl.Failed::getError,
-            ByteBufCodecs.STRING_UTF8, EIResultImpl.Failed::getErrorCode,
-            EIResultImpl.Failed::new
+    public static final StreamCodec<RegistryFriendlyByteBuf, FailedResult> FAILED_STREAM_CODEC = StreamCodec.composite(
+            INTERACTION_STREAM_CODEC, FailedResult::getInteraction,
+            ComponentSerialization.OPTIONAL_STREAM_CODEC, FailedResult::getOptionalReason,
+            ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8), FailedResult::getOptionalErrorCode,
+            FailedResult::new
     );
 
     public static void registerInteraction(ExtInteraction interaction) {
@@ -68,7 +70,7 @@ public class ExtendedInteractionsImpl {
         INTERACTIONS.put(interaction.getId(), interaction);
     }
 
-    public static void registerAction(ResourceLocation id, MapCodec<? extends DataDrivenAction> codec) {
+    public static void registerAction(Identifier id, MapCodec<? extends DataDrivenAction> codec) {
         if (frozen <= 0) throw new IllegalStateException("Extended interactions registry is already frozen! You are registering actions too late.");
 
         if (DD_ACTIONS.containsKey(id))
@@ -77,7 +79,7 @@ public class ExtendedInteractionsImpl {
         DD_ACTIONS.put(id, codec);
     }
 
-    public static MapCodec<? extends DataDrivenAction> getActionCodec(ResourceLocation id) {
+    public static MapCodec<? extends DataDrivenAction> getActionCodec(Identifier id) {
         MapCodec<? extends DataDrivenAction> codec = DD_ACTIONS.get(id);
         if (codec == null) throw new IllegalArgumentException("Data Driven Action codec with id " + id + " does not exist!");
         return codec;
@@ -92,70 +94,69 @@ public class ExtendedInteractionsImpl {
         frozen--;
     }
 
-    public static List<EIResultImpl.Result> collectForBlock(Level level, Player player, BlockPos pos) {
-        EIResultCollector collector = new EIResultCollector();
+    public static List<EIResult> collectForBlock(Level level, Player player, BlockPos pos) {
+        ArrayList<EIResult> list = new ArrayList<>();
+        EIResultCollector collector = new EIResultCollector(list);
         BlockState state = level.getBlockState(pos);
 
         Optional<ResourceKey<Block>> optionalKey = BuiltInRegistries.BLOCK.getResourceKey(state.getBlock());
         if (optionalKey.isEmpty()) throw new AssertionError("BlockState with unregistered block? Nah. I'm not dealing with this");
         //? if >=1.21.11 {
-        /*ResourceLocation key = optionalKey.get().identifier();
+        Identifier key = optionalKey.get().identifier();
         @SuppressWarnings("OptionalGetWithoutIsPresent") // Block must be registered for previous code to work. No need to recheck
         Stream<TagKey<Block>> tags = BuiltInRegistries.BLOCK.get(optionalKey.get()).get().tags();
-        *///?} else {
-        ResourceLocation key = optionalKey.get().location();
+        //?} else {
+        /*Identifier key = optionalKey.get().location();
         Stream<TagKey<Block>> tags = BuiltInRegistries.BLOCK.getHolder(optionalKey.get().location()).get().tags();
-        //? }
+        *///? }
 
         for (Iterable<EIBlockProvider> providers : BLOCK_PROVIDERS.listAll(key, tags).toList()) {
             for (EIBlockProvider provider : providers) {
                 try {
-                    collector.offer(provider.collectForBlock(level, player, pos, state));
+                    provider.collectForBlock(collector, level, player, pos, state);
                 } catch (ThrowableEIResult e) {
-                    collector.offer(e.getResult());
+                    collector.add(e.getResult());
                 }
             }
         }
-        if (player.level().isClientSide()) return collector.reversed();
-        return collector;
+        return list;
     }
 
-    public static List<EIResultImpl.Result> collectForEntity(Level level, Player player, Entity entity) {
+    public static List<EIResult> collectForEntity(Level level, Player player, Entity entity) {
         if (entity == null) return List.of();
-        EIResultCollector collector = new EIResultCollector();
+        ArrayList<EIResult> list = new ArrayList<>();
+        EIResultCollector collector = new EIResultCollector(list);
 
         Optional<ResourceKey<EntityType<?>>> optionalKey = BuiltInRegistries.ENTITY_TYPE.getResourceKey(entity.getType());
         if (optionalKey.isEmpty()) throw new AssertionError("BlockState with unregistered entity type? Nah. I'm not dealing with this");
         //? if >=1.21.11 {
-        /*ResourceLocation key = optionalKey.get().identifier();
+        Identifier key = optionalKey.get().identifier();
         @SuppressWarnings("OptionalGetWithoutIsPresent") // Block must be registered for previous code to work. No need to recheck
         Stream<TagKey<EntityType<?>>> tags = BuiltInRegistries.ENTITY_TYPE.get(optionalKey.get()).get().tags();
-        *///?} else {
-        ResourceLocation key = optionalKey.get().location();
+        //?} else {
+        /*Identifier key = optionalKey.get().location();
         Stream<TagKey<EntityType<?>>> tags = BuiltInRegistries.ENTITY_TYPE.getHolder(optionalKey.get().location()).get().tags();
-        //? }
+        *///? }
 
         for (Iterable<EIEntityProvider> providers : ENTITY_PROVIDERS.listAll(key, tags).toList()) {
             for (EIEntityProvider provider : providers) {
                 try {
-                    collector.offer(provider.collectForEntity(level, player, entity));
+                    provider.collectForEntity(collector, level, player, entity);
                 } catch (ThrowableEIResult e) {
-                    collector.offer(e.getResult());
+                    collector.add(e.getResult());
                 }
             }
         }
-
-        if (player.level().isClientSide()) return collector.reversed();
-        return collector;
+        return list;
     }
 
     public static void handleRequest(BlockMenuRequestPacket packet, ServerPlayer player) {
-        List<EIResultImpl.Result> results = collectForBlock(player.level(), player, packet.pos());
+        List<EIResult> results = collectForBlock(player.level(), player, packet.pos());
         EICommon.getPlatform().sendToClient(player, MenuResultPacket.create(results));
     }
 
     public static void handleRequest(EntityMenuRequestPacket packet, ServerPlayer player) {
-        List<EIResultImpl.Result> results = collectForEntity(player.level(), player, player.level().getEntity(packet.entityId()));
+        List<EIResult> results = collectForEntity(player.level(), player, player.level().getEntity(packet.entityId()));
         EICommon.getPlatform().sendToClient(player, MenuResultPacket.create(results));
     }
 
@@ -180,10 +181,10 @@ public class ExtendedInteractionsImpl {
         });
     }
 
-    public static Pair<List<EIResultImpl.Successful>, List<EIResultImpl.Failed>> sort(List<EIResultImpl.Result> results) {
+    public static Pair<List<SuccessfulResult>, List<FailedResult>> sort(List<EIResult> results) {
         return new Pair<>(
-                results.stream().filter(result -> result instanceof EIResultImpl.Successful).map(result -> (EIResultImpl.Successful) result).toList(),
-                results.stream().filter(result -> result instanceof EIResultImpl.Failed).map(result -> (EIResultImpl.Failed) result).toList()
+                results.stream().filter(result -> result instanceof SuccessfulResult).map(result -> (SuccessfulResult) result).toList(),
+                results.stream().filter(result -> result instanceof FailedResult).map(result -> (FailedResult) result).toList()
         );
     }
 

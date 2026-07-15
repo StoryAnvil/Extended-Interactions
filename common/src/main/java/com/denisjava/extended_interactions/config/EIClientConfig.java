@@ -3,8 +3,8 @@ package com.denisjava.extended_interactions.config;
 import com.denisjava.extended_interactions.EICommon;
 import com.denisjava.extended_interactions.api.EIPlugin;
 import com.denisjava.extended_interactions.api.ExtInteraction;
+import com.denisjava.extended_interactions.api.providers.FailedResult;
 import com.denisjava.extended_interactions.client.EIClient;
-import com.denisjava.extended_interactions.impl.EIResultImpl;
 import com.denisjava.extended_interactions.impl.EIYACLConfigFactoryImpl;
 import com.denisjava.extended_interactions.impl.ExtendedInteractionsImpl;
 import com.denisjava.extended_interactions.util.Lazy;
@@ -20,7 +20,6 @@ import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import static com.denisjava.extended_interactions.EICommon.id;
-import static net.minecraft.network.chat.Component.literal;
 import static net.minecraft.network.chat.Component.translatable;
 
 public class EIClientConfig {
@@ -336,7 +334,7 @@ public class EIClientConfig {
         return i1.getDeclaringPlugin().getUID().compareTo(i2.getDeclaringPlugin().getUID());
     }
 
-    public boolean failureFilter(EIResultImpl.Failed failed) {
-        return reportNoItem || !failed.errorCode.equals("no_item");
+    public boolean failureFilter(FailedResult failed) {
+        return reportNoItem || !"no_item".equals(failed.getErrorCode());
     }
 }

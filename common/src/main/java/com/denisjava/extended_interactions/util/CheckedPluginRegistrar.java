@@ -1,7 +1,7 @@
 package com.denisjava.extended_interactions.util;
 
 import com.denisjava.extended_interactions.api.EIPlugin;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Objects;
 
@@ -12,7 +12,7 @@ public class CheckedPluginRegistrar {
         this.currentPlugin = currentPlugin;
     }
 
-    protected void assertId(ResourceLocation identifier) {
+    protected void assertId(Identifier identifier) {
         Objects.requireNonNull(identifier);
         if (!identifier.getNamespace().equals(currentPlugin.getDeclaringModId()))
             throw new IllegalArgumentException("Namespace of " + identifier + " does not match namespace of declaring plugin: " + currentPlugin.getDeclaringModId());

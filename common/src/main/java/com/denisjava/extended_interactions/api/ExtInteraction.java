@@ -6,12 +6,15 @@ import com.denisjava.extended_interactions.util.ThrowableEIResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * Base class for all extended interactions.<br>
@@ -19,17 +22,17 @@ import org.jetbrains.annotations.ApiStatus;
  */
 @ApiStatus.NonExtendable
 public abstract class ExtInteraction {
-    protected final ResourceLocation id;
+    protected final Identifier id;
     protected final ExtInteractionIcon icon;
     protected final EIPlugin declaringPlugin;
 
-    protected ExtInteraction(ResourceLocation id, ExtInteractionIcon icon, EIPlugin declaringPlugin) {
+    protected ExtInteraction(Identifier id, ExtInteractionIcon icon, EIPlugin declaringPlugin) {
         this.id = id;
         this.icon = icon;
         this.declaringPlugin = declaringPlugin;
     }
 
-    public final ResourceLocation getId() {
+    public final Identifier getId() {
         return id;
     }
 
@@ -46,8 +49,8 @@ public abstract class ExtInteraction {
     }
 
     /**
-     * Returns icon for provided override name ({@link EIResults#success(ExtInteraction, String)}.<br>
-     * Use {@link EIResults#success(ExtInteraction, String)} in your provider to supply icon override name and
+     * Returns icon for provided override name.<br>
+     * Use {@link com.denisjava.extended_interactions.api.providers.SuccessfulResult#addIconOverride(String)} in your provider to supply icon override name and
      * return correct icon for the name in this method.
      * @param overrideName Dev-defined name for icon
      * @return Icon to use instead of default one

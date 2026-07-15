@@ -1,7 +1,7 @@
 package com.denisjava.extended_interactions.impl;
 
-import com.denisjava.extended_interactions.api.EIBlockProvider;
-import com.denisjava.extended_interactions.api.EIEntityProvider;
+import com.denisjava.extended_interactions.api.providers.EIBlockProvider;
+import com.denisjava.extended_interactions.api.providers.EIEntityProvider;
 import com.denisjava.extended_interactions.api.ProviderRegistrar;
 import com.denisjava.extended_interactions.util.EIProviderRegistry;
 import net.minecraft.core.Holder;
@@ -19,9 +19,9 @@ public final class ProviderRegistrarImpl implements ProviderRegistrar {
         if (holder.unwrapKey().isEmpty())
             throw new IllegalArgumentException("Provided block is not yet registered! Register it to minecraft registry before registering extended interactions to it");
         //? if >=1.21.11 {
-        /*var key = holder.unwrapKey().get().identifier();
-        *///?} else
-        var key = holder.unwrapKey().get().location();
+        var key = holder.unwrapKey().get().identifier();
+        //?} else
+        //var key = holder.unwrapKey().get().location();
         ExtendedInteractionsImpl.BLOCK_PROVIDERS.register(key, provider);
     }
 
@@ -31,9 +31,9 @@ public final class ProviderRegistrarImpl implements ProviderRegistrar {
         if (rkey.isEmpty())
             throw new IllegalArgumentException("Provided block is not yet registered! Register it to minecraft registry before registering extended interactions to it");
         //? if >=1.21.11 {
-        /*var key = rkey.get().identifier();
-        *///?} else
-        var key = rkey.get().location();
+        var key = rkey.get().identifier();
+        //?} else
+        //var key = rkey.get().location();
         ExtendedInteractionsImpl.BLOCK_PROVIDERS.register(key, provider);
     }
 
@@ -52,9 +52,9 @@ public final class ProviderRegistrarImpl implements ProviderRegistrar {
         if (holder.unwrapKey().isEmpty())
             throw new IllegalArgumentException("Provided entity type is not yet registered! Register it to minecraft registry before registering extended interactions to it");
         //? if >=1.21.11 {
-        /*var key = holder.unwrapKey().get().identifier();
-        *///?} else
-        var key = holder.unwrapKey().get().location();
+        var key = holder.unwrapKey().get().identifier();
+        //?} else
+        //var key = holder.unwrapKey().get().location();
         ExtendedInteractionsImpl.ENTITY_PROVIDERS.register(key, provider);
     }
 
@@ -64,9 +64,9 @@ public final class ProviderRegistrarImpl implements ProviderRegistrar {
         if (rkey.isEmpty())
             throw new IllegalArgumentException("Provided entity type is not yet registered! Register it to minecraft registry before registering extended interactions to it");
         //? if >=1.21.11 {
-        /*var key = rkey.get().identifier();
-        *///?} else
-        var key = rkey.get().location();
+        var key = rkey.get().identifier();
+        //?} else
+        //var key = rkey.get().location();
         ExtendedInteractionsImpl.ENTITY_PROVIDERS.register(key, provider);
     }
 

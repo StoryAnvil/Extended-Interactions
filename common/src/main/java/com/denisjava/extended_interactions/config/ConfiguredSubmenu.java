@@ -11,16 +11,10 @@ import dev.isxander.yacl3.gui.YACLScreen;
 import dev.isxander.yacl3.gui.controllers.ControllerWidget;
 import dev.isxander.yacl3.gui.controllers.dropdown.AbstractDropdownController;
 import dev.isxander.yacl3.gui.controllers.dropdown.AbstractDropdownControllerElement;
-import dev.isxander.yacl3.gui.controllers.dropdown.ItemController;
-import dev.isxander.yacl3.gui.controllers.dropdown.ItemControllerElement;
-import dev.isxander.yacl3.gui.utils.ItemRegistryHelper;
-import dev.isxander.yacl3.gui.utils.MiscUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -120,7 +114,7 @@ public record ConfiguredSubmenu(String name, Item icon) {
 
             if (hovered) {
                 //? if >=1.21.9
-                //graphics.requestCursor(isAvailable() ? com.mojang.blaze3d.platform.cursor.CursorTypes.POINTING_HAND : com.mojang.blaze3d.platform.cursor.CursorTypes.NOT_ALLOWED);
+                graphics.requestCursor(isAvailable() ? com.mojang.blaze3d.platform.cursor.CursorTypes.POINTING_HAND : com.mojang.blaze3d.platform.cursor.CursorTypes.NOT_ALLOWED);
             }
         }
 

@@ -2,12 +2,14 @@ package com.denisjava.extended_interactions.debug;
 
 import com.denisjava.extended_interactions.EICommon;
 import com.denisjava.extended_interactions.api.*;
-import com.denisjava.extended_interactions.impl.EIResultImpl;
+import com.denisjava.extended_interactions.api.providers.EIBlockProvider;
+import com.denisjava.extended_interactions.api.providers.EIResult;
+import com.denisjava.extended_interactions.api.providers.EIResultCollector;
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import dev.isxander.yacl3.api.LabelOption;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -48,13 +50,16 @@ public class DebugPlugin implements EIPlugin {
         registrar.blockProvider(Blocks.GRASS_BLOCK, constantProvider(DEBUG[2]));
     }
 
-    private EIResultImpl.Result desyncTest(Level level, Player player, BlockPos pos, BlockState state) {
-        if (level.isClientSide()) return EIResults.failure(DESYNC_TEST, Component.literal("Actually no"), "desync-test");
-        return EIResults.success(DESYNC_TEST);
+    private void desyncTest(EIResultCollector collector, Level level, Player player, BlockPos pos, BlockState state) {
+        if (level.isClientSide()) {
+            collector.add(EIResult.fail(DESYNC_TEST).addReason(Component.literal("Actually no"), "desync-test"));
+            return;
+        }
+        collector.add(EIResult.success(DESYNC_TEST));
     }
 
     private EIBlockProvider constantProvider(JavaInteraction interaction) {
-        return (level, user, pos, state) -> EIResults.success(interaction);
+        return (collector, level, user, pos, state) -> collector.add(EIResult.success(interaction));
     }
 
     @Override
@@ -63,7 +68,7 @@ public class DebugPlugin implements EIPlugin {
     }
 
     @Override
-    public ResourceLocation getUID() {
+    public Identifier getUID() {
         return id("debug");
     }
 
