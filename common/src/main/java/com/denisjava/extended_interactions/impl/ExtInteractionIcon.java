@@ -3,9 +3,12 @@ package com.denisjava.extended_interactions.impl;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 
 public interface ExtInteractionIcon {
+    ExtInteractionIcon ERROR_ICON = new ItemStackIcon(Items.BARRIER);
+
     /**
      * Draws icon
      * @param g Graphics context to draw on

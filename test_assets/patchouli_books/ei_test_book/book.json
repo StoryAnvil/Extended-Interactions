@@ -1,0 +1,6 @@
+{
+    "name": "EI Test Book",
+    "model": "minecraft:structure_block",
+    "version": "69",
+    "creative_tab": "minecraft:tools_and_utilities"
+}

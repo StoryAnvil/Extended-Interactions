@@ -16,6 +16,12 @@ stonecutter {
     constants["malilibPreRewrite"] = commonMod.prop("malilibPreRewrite") == "TRUE"
 }
 
+repositories {
+    maven {
+        url = uri("https://maven.modmuss50.me/")
+    }
+}
+
 dependencies {
     minecraft("com.mojang:minecraft:${commonMod.minecraftVersion}")
     mappings(loom.layered {
@@ -30,6 +36,23 @@ dependencies {
 
     if (commonMod.prop("malilib") != "NONE") {
         modImplementation("maven.modrinth:GcWjdA9I:${commonMod.prop("malilib")}")
+    }
+    if (commonMod.prop("fabricPatchouli") != "NONE") {
+        modCompileOnly("maven.modrinth:nU0bVIaL:${commonMod.prop("fabricPatchouli")}")
+    }
+    if (commonMod.prop("fabricOracleIndex") != "NONE") {
+        modImplementation("maven.modrinth:J8MMsNrL:${commonMod.prop("fabricOracleIndex")}")
+
+        var libs: List<String> = Paths.get(rootProject.projectDir.path, "test_assets", "dev_libs", "oracle" + commonMod.minecraftVersion)
+            .toFile().listFiles().map { v -> v.toPath().toAbsolutePath().toString() }
+
+        modImplementation(files(libs))
+    }
+    if (commonMod.prop("fabricFiber") != "NONE") {
+        modImplementation("me.zeroeightsix:fiber:${commonMod.prop("fabricFiber")}")
+    }
+    if (commonMod.prop("fabricArchAPI") != "NONE") {
+        modImplementation("maven.modrinth:lhGA9TYQ:${commonMod.prop("fabricArchAPI")}")
     }
 }
 

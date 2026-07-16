@@ -1,0 +1,11 @@
+{
+    "name": "Ah",
+    "icon": "minecraft:writable_book",
+    "category": "patchouli:supertest",
+    "pages": [
+        {
+            "type": "text",
+            "text": "It appears to have done something"
+        }
+    ]
+}

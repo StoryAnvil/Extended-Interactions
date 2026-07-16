@@ -1,0 +1,19 @@
+{
+    "name": "Spotlight",
+    "icon": "minecraft:light",
+    "category": "patchouli:faketest",
+    "pages": [
+        {
+            "type": "text",
+            "text": "wepifweoifnqwoipfnqw[oienfqowineo[qweinfqowein"
+        },
+        {
+            "type": "spotlight",
+            "item": {
+                "item": "minecraft:oak_log"
+            },
+            "link_recipe": true,
+            "text": "This oak log."
+        }
+    ]
+}

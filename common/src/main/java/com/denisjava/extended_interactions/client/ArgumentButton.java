@@ -9,6 +9,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 public class ArgumentButton implements RadialMenuButton, InteractionRadialMenuButton {
     private final SuccessfulResult result;
     private final InteractionArgument argument;
@@ -52,5 +55,17 @@ public class ArgumentButton implements RadialMenuButton, InteractionRadialMenuBu
     @Override
     public String toString() {
         return "Argument[" + result.getInteraction().getId() + "=" + argument.id() + "]";
+    }
+
+    @Override
+    public List<Component> _getDebugInfo() {
+        return Stream.concat(Stream.concat(Stream.of((Component) Component.literal("=== Begin Stored Result == ")), result._getDebugInfo().stream()),
+                Stream.of(
+                        Component.literal("Argument:"),
+                        Component.literal("  id=" + argument.id()),
+                        Component.literal("  iconOverride=" + argument.iconOverride().orElse("null")),
+                        Component.literal("  nameOverride=").append(argument.nameOverride().orElse(Component.literal("**NO OVERRIDE**")))
+                )
+            ).toList();
     }
 }

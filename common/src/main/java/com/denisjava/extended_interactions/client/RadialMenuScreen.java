@@ -25,6 +25,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 
+import static net.minecraft.network.chat.Component.literal;
+
 public class RadialMenuScreen extends Screen {
     private static final ResourceLocation SLOT_SPRITE = ResourceLocation.withDefaultNamespace("gamemode_switcher/slot");
     private static final ResourceLocation SELECTION_SPRITE = ResourceLocation.withDefaultNamespace("gamemode_switcher/selection");
@@ -39,6 +41,7 @@ public class RadialMenuScreen extends Screen {
     private List<FailedResult> failedResults = List.of();
     private ActionData[] successful = new ActionData[0];
     private boolean serverReplied = false;
+    private boolean displayAdvanced = false;
 
     private int selectedInteraction = -1;
 
@@ -51,6 +54,7 @@ public class RadialMenuScreen extends Screen {
     protected void init() {
         // Predict interactions on client
         EIClientConfig config = EIClientConfig.HANDLER.instance();
+        displayAdvanced = config.displayAdvancedInfo;
         if (config.predictInteractions) {
             Pair<RadialMenuData, List<RadialMenuButton>> p = RadialMenuData.createPrediction(target);
             data = p.getFirst();
@@ -94,6 +98,20 @@ public class RadialMenuScreen extends Screen {
             //? if <1.21.11
             g.blitSprite(SELECTION_SPRITE, centerX + s.x - 13, centerY + s.y - 13, 26, 26);
             g.drawString(font, s.name, centerX - font.width(s.name) / 2, centerY - 4, -1);
+
+            if (displayAdvanced) {
+                RadialMenuButton button = data.buttons.get(selectedInteraction);
+                List<Component> info = button._getDebugInfo();
+                int y = g.guiHeight() - info.size() * 10;
+                g.drawString(font, literal("Selected button: " + button.getClass().getCanonicalName()).withStyle(ChatFormatting.AQUA), 5, y - 30, -1);
+                g.drawString(font, literal("Clientside: ").withStyle(ChatFormatting.AQUA).append(
+                        button.isClientSide() ? literal("TRUE").withStyle(ChatFormatting.GREEN) : literal("FALSE").withStyle(ChatFormatting.RED)
+                ), 5, y - 20, -1);
+                for (Component component : info) {
+                    g.drawString(font, component, 5, y - 10, -1);
+                    y += 10;
+                }
+            }
         }
 
         int y = 5;
@@ -104,6 +122,10 @@ public class RadialMenuScreen extends Screen {
             y += 10;
             g.drawString(font, result.getReason().copy().withStyle(ChatFormatting.RED), 5, y, -1);
             y += 15;
+            if (displayAdvanced) {
+                g.drawString(font, literal("ERRCODE: " + result.getErrorCode()).withStyle(ChatFormatting.AQUA), 5, y - 5, -1);
+                y += 10;
+            }
         }
     }
 
@@ -269,6 +291,12 @@ public class RadialMenuScreen extends Screen {
         failedResults = packet.bad();
         original = null;
         onDataUpdate();
+    }
+
+    @Override
+    public void onClose() {
+        // Prevent EI from closing screens opening by client interactions
+        if (minecraft != null && minecraft.screen instanceof RadialMenuScreen) super.onClose();
     }
 
     record ActionData(ExtInteractionIcon icon, int x, int y, Component name) { }

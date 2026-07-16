@@ -24,6 +24,15 @@ dependencies {
     if (commonMod.prop("mafglib") != "NONE") {
         implementation("maven.modrinth:SKI34J7B:${commonMod.prop("mafglib")}")
     }
+    if (commonMod.prop("neoforgePatchouli") != "NONE") {
+        implementation("maven.modrinth:nU0bVIaL:${commonMod.prop("neoforgePatchouli")}")
+    }
+    if (commonMod.prop("neoforgeOracleIndex") != "NONE") {
+        compileOnly("maven.modrinth:J8MMsNrL:${commonMod.prop("neoforgeOracleIndex")}")
+    }
+    if (commonMod.prop("neoforgeArchAPI") != "NONE") {
+        runtimeOnly("maven.modrinth:lhGA9TYQ:${commonMod.prop("neoforgeArchAPI")}")
+    }
 }
 
 neoForge {

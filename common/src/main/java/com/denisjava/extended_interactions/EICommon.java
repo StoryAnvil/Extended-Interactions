@@ -46,7 +46,7 @@ public class EICommon {
 
     public static void registerPlugins(List<PluginData> pluginCandidates) {
         EIUtils.checkConfigDirectory();
-        List<EIPlugin> plugins = pluginCandidates.stream().map(EICommon::loadPlugin).filter(Objects::nonNull)
+        List<EIPlugin> plugins = pluginCandidates.stream().map(EICommon::safeLoadPlugin).filter(Objects::nonNull)
                 .sorted(EICommon::pluginSorter).toList();
         EICommon.LOG.info("Loading order: {}", plugins.stream().map(EIPlugin::getUID).toList());
         ExtendedInteractionsImpl.setAllPlugins(plugins);
@@ -60,6 +60,15 @@ public class EICommon {
         }
         ExtendedInteractionsImpl.freezeRegistries();
         ExtendedInteractionsImpl.freezeCountDown();
+    }
+
+    private static EIPlugin safeLoadPlugin(PluginData data) {
+        try {
+            return loadPlugin(data);
+        } catch (RuntimeException e) {
+            LOG.error("Failed to load plugin {}", data.getName(), e);
+            return null;
+        }
     }
 
     private static EIPlugin loadPlugin(PluginData data) {

@@ -14,9 +14,20 @@ neoForge {
     }
 }
 
+stonecutter {
+    constants["patchouli"] = commonMod.prop("commonPatchouli") != "NONE"
+    constants["oracle_index"] = commonMod.prop("commonOracleIndex") != "NONE"
+}
+
 dependencies {
     compileOnly("org.spongepowered:mixin:${commonMod.prop("mixinVersion")}")
     implementation("dev.isxander:yet-another-config-lib:${commonMod.prop("yaclVersion")}+${commonMod.minecraftVersion}-neoforge")
+    if (commonMod.prop("commonPatchouli") != "NONE") {
+        compileOnly("maven.modrinth:nU0bVIaL:${commonMod.prop("commonPatchouli")}")
+    }
+    if (commonMod.prop("commonOracleIndex") != "NONE") {
+        compileOnly("maven.modrinth:J8MMsNrL:${commonMod.prop("commonOracleIndex")}")
+    }
 }
 
 val commonJava: Configuration = configurations.create("commonJava") {

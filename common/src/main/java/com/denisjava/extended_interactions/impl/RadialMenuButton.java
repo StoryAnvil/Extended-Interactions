@@ -4,6 +4,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public interface RadialMenuButton {
     Component getName();
     ExtInteractionIcon getIcon();
@@ -13,4 +15,5 @@ public interface RadialMenuButton {
     default @Nullable String _categoryNameHook() {
         return null;
     }
+    default List<Component> _getDebugInfo() { return List.of(); }
 }

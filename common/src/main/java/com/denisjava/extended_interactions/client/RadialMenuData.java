@@ -173,6 +173,18 @@ public class RadialMenuData {
         public String toString() {
             return "Category[" + buttons + "]";
         }
+
+        @Override
+        public List<Component> _getDebugInfo() {
+            return List.of(
+                    Component.literal("Plain Name: " + name),
+                    Component.literal("Display Name: (next line)"),
+                    displayName,
+                    Component.literal("Icon: " + icon),
+                    Component.literal("Id: " + id),
+                    Component.literal("Parent: " + (parent == null ? "null" : parent.getClass().getCanonicalName()))
+            );
+        }
     }
     private record CategoryReturnButton(CategoryData owner) implements RadialMenuButton, ClientRadialMenuButton {
         @Override
@@ -195,6 +207,14 @@ public class RadialMenuData {
         @Override
         public ResourceLocation getId() {
             return EICommon.id("back");
+        }
+
+        @Override
+        public List<Component> _getDebugInfo() {
+            return List.of(
+                    Component.literal("Owner: " + owner.getClass().getCanonicalName()),
+                    Component.literal("Owner id: " + owner.id)
+            );
         }
     }
 

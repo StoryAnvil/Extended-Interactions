@@ -54,6 +54,7 @@ public class StateConfiguratorInteraction<T extends Comparable<T>> extends JavaI
         //noinspection DataFlowIssue
         //? if >=1.21.11
         //if (player.gameMode().isBlockPlacingRestricted()) {
+        //? if <1.21.11
         if (!player.getAbilities().mayBuild) {
             collector.add(EIResult.fail(this));
             return;
@@ -65,7 +66,10 @@ public class StateConfiguratorInteraction<T extends Comparable<T>> extends JavaI
      * Collects list of all possible values player can configure.
      * @param player Player who requested this interaction
      */
+    //? if <1.21.11
     public Collection<T> getAvailableValues(Player player) {
+    //? if >=1.21.11
+    //public List<T> getAvailableValues(Player player) {
         return property.getPossibleValues();
     }
 

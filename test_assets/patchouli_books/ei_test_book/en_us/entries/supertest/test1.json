@@ -1,0 +1,19 @@
+{
+    "name": "Spotlight",
+    "icon": "minecraft:light",
+    "category": "patchouli:supertest",
+    "pages": [
+        {
+            "type": "text",
+            "text": "This entry is used to test EI's Patchouli book lookup feature"
+        },
+        {
+            "type": "spotlight",
+            "item": {
+                "item": "minecraft:oak_log"
+            },
+            "link_recipe": true,
+            "text": "This page contains oak log. This makes Patchouli associate this page with it. Try looking up oak log using EI"
+        }
+    ]
+}

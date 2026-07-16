@@ -52,3 +52,4 @@ mods.txt
 publish.sh
 testserver.py
 changelog.md
+/test_assets/dev_libs

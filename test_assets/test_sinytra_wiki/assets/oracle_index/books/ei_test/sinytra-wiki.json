@@ -1,0 +1,8 @@
+{
+    "id": "ei-test",
+    "schema": "1",
+    "platforms": {
+        "modrinth": "extended-interactions"
+    },
+    "owners": ["DenisJava"]
+}

@@ -63,6 +63,7 @@ public class SuccessfulResult extends EIResult implements RadialMenuButton, Inte
         return arguments;
     }
 
+    //<editor-fold desc="EI Internal Code" defaultstate="collapsed">
     @ApiStatus.Internal
     public Optional<Component> getOptionalNameOverride() {
         return Optional.ofNullable(nameOverride);
@@ -107,4 +108,20 @@ public class SuccessfulResult extends EIResult implements RadialMenuButton, Inte
     public @Nullable InteractionArgument getArgument() {
         return null;
     }
+
+    @ApiStatus.Internal
+    @Override
+    public List<Component> _getDebugInfo() {
+        return List.of(
+                Component.literal("Interaction:"),
+                Component.literal("   id=" + interaction.getId()),
+                Component.literal("   plugin=" + interaction.getDeclaringPlugin().getUID()),
+                Component.literal("Icon Override: " + iconOverride),
+                Component.literal("Arguments: " + arguments),
+                Component.literal("Name Override: (next line)"),
+                nameOverride == null ? Component.literal("**NO OVERRIDE**") : nameOverride,
+                Component.empty()
+        );
+    }
+    //</editor-fold>
 }

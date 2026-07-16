@@ -18,6 +18,8 @@
     "extended_interactions.bind.help": "§cUse minecraft's control options to change",
     "extended_interactions.report_no_item": "Display interactions that failed due to missing item",
     "extended_interactions.report_no_item.help": "If enabled, interactions that can not be used because player does not have required item are displayed",
+    "extended_interactions.dangerous_cfg": "§cDANGEROUS OPTIONS",
+    "extended_interactions.advanced": "Display debug information (§cfor developers only!§r)",
     "extended_interactions.client_vis": "Client Visuals",
     "extended_interactions.client_vis.tooltip": "Configure EI's visuals",
     "extended_interactions.client_category": "Submenus",
@@ -79,7 +81,11 @@
     "extinter.extended_interactions.mc/villager_trade.no_trades": "No trades available",
     "extinter.extended_interactions.mc/remove_leash": "Detach Lead",
     "extinter.extended_interactions.mc/delay_cfg": "Configure delay",
+    "extinter.extended_interactions.patchouli/lookup": "Lookup in Patchouli book",
+    "extinter.extended_interactions.patchouli/lookup1": "Lookup in %s",
+    "extinter.extended_interactions.patchouli/oracle_index/lookup": "Lookup in Oracle Index",
     "ei_plugin.extended_interactions.debug": "EI Debug",
     "ei_plugin.extended_interactions.custom": "Modpack provided",
-    "ei_plugin.extended_interactions.builtin": "Extended Interactions Builtins"
+    "ei_plugin.extended_interactions.builtin": "Extended Interactions Builtins",
+    "ei_plugin.extended_interactions.patchouli": "EI Patchouli Compatibility"
 }

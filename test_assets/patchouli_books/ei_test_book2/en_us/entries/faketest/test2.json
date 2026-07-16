@@ -1,0 +1,19 @@
+{
+    "name": "qdp",
+    "icon": "minecraft:dirt",
+    "category": "patchouli:faketest",
+    "pages": [
+        {
+            "type": "text",
+            "text": "erfnerwojfnkejrlwnfkjerwnfjkernwfjkewrkjfnkjewkrjfnkjenrw"
+        },
+        {
+            "type": "spotlight",
+            "item": {
+                "item": "minecraft:birch_log"
+            },
+            "link_recipe": true,
+            "text": "This not oak log."
+        }
+    ]
+}

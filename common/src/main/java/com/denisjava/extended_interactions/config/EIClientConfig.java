@@ -111,6 +111,12 @@ public class EIClientConfig {
             .initial(ConfiguredSubmenu::new)
             .build());
 
+    public static final Lazy<Option<Boolean>> ADVANCED_INFO = new Lazy<>(() -> Option.<Boolean>createBuilder()
+            .name(translatable("extended_interactions.advanced"))
+            .binding(false, () -> HANDLER.instance().displayAdvancedInfo, v -> HANDLER.instance().displayAdvancedInfo = v)
+            .controller(TickBoxControllerBuilder::create)
+            .build());
+
     /**
      * Generates screen for client and server EI config.
      */
@@ -149,6 +155,11 @@ public class EIClientConfig {
                 throw new RuntimeException("Failed to build YACL config group for extended interaction addon with id " + plugin.getDeclaringModId(), e);
             }
         }
+
+        cfg.group(OptionGroup.createBuilder()
+                        .name(translatable("extended_interactions.dangerous_cfg"))
+                        .option(ADVANCED_INFO.get())
+                .build());
 
         return cfg.build();
     }
@@ -302,6 +313,11 @@ public class EIClientConfig {
             comment = "Do not collapse interactions to submenu if this submenu only has one available interaction"
     ) // TODO: Add to config UI
     public boolean expandSingleItemCategories = true;
+
+    @SerialEntry(
+            comment = "If enabled, some advanced information will be displayed. For developer use"
+    )
+    public boolean displayAdvancedInfo = false;
 
     @SerialEntry(
             comment = "Use ingame config ui"
