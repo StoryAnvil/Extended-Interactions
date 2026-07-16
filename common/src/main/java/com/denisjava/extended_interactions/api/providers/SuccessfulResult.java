@@ -2,10 +2,11 @@ package com.denisjava.extended_interactions.api.providers;
 
 import com.denisjava.extended_interactions.api.ExtInteraction;
 import com.denisjava.extended_interactions.api.InteractionArgument;
+import com.denisjava.extended_interactions.client.InteractionRadialMenuButton;
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import com.denisjava.extended_interactions.impl.RadialMenuButton;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public class SuccessfulResult extends EIResult implements RadialMenuButton {
+public class SuccessfulResult extends EIResult implements RadialMenuButton, InteractionRadialMenuButton {
     private @Nullable Component nameOverride;
     private @Nullable String iconOverride;
     private @Nullable List<InteractionArgument> arguments;
@@ -77,23 +78,33 @@ public class SuccessfulResult extends EIResult implements RadialMenuButton {
         return Optional.ofNullable(arguments);
     }
 
+    @ApiStatus.Internal
     @Override
     public Component getName() {
         return nameOverride == null ? interaction.getName() : nameOverride;
     }
 
+    @ApiStatus.Internal
     @Override
     public ExtInteractionIcon getIcon() {
         return iconOverride == null ? interaction.getIcon() : interaction.getIcon(iconOverride);
     }
 
+    @ApiStatus.Internal
     @Override
     public boolean isClientSide() {
         return interaction.isClientSide();
     }
 
+    @ApiStatus.Internal
     @Override
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return interaction.getId();
+    }
+
+    @ApiStatus.Internal
+    @Override
+    public @Nullable InteractionArgument getArgument() {
+        return null;
     }
 }

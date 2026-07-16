@@ -27,16 +27,16 @@ public interface ExtInteractionIcon {
         @Override
         public void render(GuiGraphics g, Font font, int x, int y, int width, int height) {
             //? if >=1.21.11 {
-            g.pose().pushMatrix();
+            /*g.pose().pushMatrix();
             g.pose().scale((float) width / 16, (float) height / 16);
             render16x16(g, font, x, y);
             g.pose().popMatrix();
-            //? } else {
-            /*g.pose().pushPose();
+            *///? } else {
+            g.pose().pushPose();
             g.pose().scale((float) width / 16, (float) height / 16, 1);
             render16x16(g, font, x, y);
             g.pose().popPose();
-            *///? }
+            //? }
         }
 
         @Override

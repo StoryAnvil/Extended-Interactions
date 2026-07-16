@@ -11,7 +11,7 @@ import com.mojang.serialization.JsonOps;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -94,7 +94,7 @@ public class EIDataManager implements EIPlugin {
     }
 
     @Override
-    public Identifier getUID() {
+    public ResourceLocation getUID() {
         return EICommon.id("custom");
     }
 

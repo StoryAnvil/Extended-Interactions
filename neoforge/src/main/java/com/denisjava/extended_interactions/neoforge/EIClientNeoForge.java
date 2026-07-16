@@ -43,12 +43,12 @@ public class EIClientNeoForge {
     @SubscribeEvent
     public static void registerKeymappings(RegisterKeyMappingsEvent event) {
         //? if >=1.21.11
-        event.registerCategory(EIClient.KEYMAPPING_CATEGORY);
+        //event.registerCategory(EIClient.KEYMAPPING_CATEGORY);
         event.register(EIClient.OPEN_RADIAL.get());
     }
 
     //? if >=1.21.11 {
-    @SubscribeEvent
+    /*@SubscribeEvent
     public static void registerClientPayloadHandlers(net.neoforged.neoforge.client.network.event.RegisterClientPayloadHandlersEvent event) {
         EIClient.registerPayloadHandlers(new EIPlatform.ClientNetworkRegistrar() {
             @Override
@@ -57,5 +57,5 @@ public class EIClientNeoForge {
             }
         });
     }
-    //?}
+    *///?}
 }

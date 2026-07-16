@@ -21,14 +21,14 @@ public abstract class InventoryMixin {
     public abstract ItemStack getItem(int index);
 
     //? if <1.21.11 {
-    /*@Inject(method = "getSelected", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getSelected", at = @At("HEAD"), cancellable = true)
     private void overrideSelected(CallbackInfoReturnable<ItemStack> cir) {
         Integer override = ((EIPlayer) player).ei$getSlotOverride();
         if (override == null) return;
         cir.setReturnValue(getItem(override));
     }
-    *///?} else {
-    @Inject(method = "getSelectedItem", at = @At("HEAD"), cancellable = true)
+    //?} else {
+    /*@Inject(method = "getSelectedItem", at = @At("HEAD"), cancellable = true)
     private void overrideSelected(CallbackInfoReturnable<ItemStack> cir) {
         Integer override = ((EIPlayer) player).ei$getSlotOverride();
         if (override == null) return;
@@ -41,5 +41,5 @@ public abstract class InventoryMixin {
         if (override == null) return;
         cir.setReturnValue(override);
     }
-    //?}
+    *///?}
 }

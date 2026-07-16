@@ -1,5 +1,6 @@
 package com.denisjava.extended_interactions;
 
+import com.denisjava.extended_interactions.api.InteractionArgument;
 import com.denisjava.extended_interactions.api.providers.EIResult;
 import com.denisjava.extended_interactions.api.providers.FailedResult;
 import com.denisjava.extended_interactions.api.providers.SuccessfulResult;
@@ -18,7 +19,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 //? if >=1.21.11
-import net.minecraft.server.permissions.Permissions;
+//import net.minecraft.server.permissions.Permissions;
 import net.minecraft.world.entity.Entity;
 
 import java.util.Collection;
@@ -31,9 +32,9 @@ public class EICommands {
     public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext, Commands.CommandSelection commandSelection) {
         dispatcher.register(literal("extended_interactions")
                 //? if >=1.21.11 {
-                .requires(css -> css.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
-                //?} else
-                //.requires(css -> css.hasPermission(2))
+                /*.requires(css -> css.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+                *///?} else
+                .requires(css -> css.hasPermission(2))
 
                 .then(literal("listResults")
                         .then(literal("block").then(argument("pos", BlockPosArgument.blockPos()).executes(EICommands::listBlock)))
@@ -63,15 +64,20 @@ public class EICommands {
         }
         ctx.getSource().sendSystemMessage(Component.translatable("debug.extended_interactions.results", results.size()));
         for (EIResult result : results) {
-            MutableComponent component = null;
             if (result instanceof SuccessfulResult success) {
-                component = Component.translatable("debug.extended_interactions.success", success.getInteraction().getId().toString(),
-                        success.getIconOverride() == null ? Component.literal("default").withStyle(ChatFormatting.GRAY) : success.getIconOverride());
+                ctx.getSource().sendSystemMessage(Component.translatable("debug.extended_interactions.success", success.getInteraction().getId().toString(),
+                        success.getIconOverride() == null ? Component.literal("default").withStyle(ChatFormatting.GRAY) : success.getIconOverride()));
+                if (success.getArguments() != null) {
+                    for (InteractionArgument argument : success.getArguments()) {
+                        ctx.getSource().sendSystemMessage(Component.translatable("debug.extended_interactions.argument",
+                                argument.id(), argument.nameOverride().orElse(Component.literal("NO-NAME").withStyle(ChatFormatting.GRAY)),
+                                argument.iconOverride().orElse("NO-ICON")));
+                    }
+                }
             }
             if (result instanceof FailedResult fail) {
-                component = Component.translatable("debug.extended_interactions.failure", fail.getInteraction().getId().toString(), fail.getReason(), fail.getErrorCode());
+                ctx.getSource().sendSystemMessage(Component.translatable("debug.extended_interactions.failure", fail.getInteraction().getId().toString(), fail.getOptionalReason().orElse(Component.literal("NO-REASON")), fail.getOptionalErrorCode().orElse("NO-ERROR-CODE")));
             }
-            ctx.getSource().sendSystemMessage(Objects.requireNonNull(component, "bad result type"));
         }
     }
 }

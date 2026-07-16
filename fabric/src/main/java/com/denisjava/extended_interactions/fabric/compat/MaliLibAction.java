@@ -9,7 +9,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.hotkeys.*;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 public class MaliLibAction implements DataDrivenAction {
@@ -41,7 +41,7 @@ public class MaliLibAction implements DataDrivenAction {
     }
 
     @Override
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return EICommon.id("malilib");
     }
 

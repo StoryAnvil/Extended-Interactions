@@ -9,7 +9,7 @@ import com.denisjava.extended_interactions.impl.PluginData;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
@@ -49,9 +49,9 @@ public class EINeoForge implements EIPlatform {
     @Override
     public void sendToServer(CustomPacketPayload payload) {
         //? if >=1.21.11 {
-        net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(payload);
-        //?} else
-        //PacketDistributor.sendToServer(payload);
+        /*net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(payload);
+        *///?} else
+        PacketDistributor.sendToServer(payload);
     }
 
     @Override
@@ -67,9 +67,9 @@ public class EINeoForge implements EIPlatform {
     @Override
     public boolean isDevEnvironment() {
         //? if <1.21.11
-        //return !FMLLoader.isProduction();
+        return !FMLLoader.isProduction();
         //? if >=1.21.11
-        return !FMLLoader.getCurrent().isProduction();
+        //return !FMLLoader.getCurrent().isProduction();
     }
 
     @SubscribeEvent
@@ -96,14 +96,14 @@ public class EINeoForge implements EIPlatform {
         PayloadRegistrar registrar = event.registrar("1");
 
         //? if <1.21.11 {
-        /*final HashMap<Identifier, Consumer<? extends CustomPacketPayload>> clientListeners = new HashMap<>();
+        final HashMap<ResourceLocation, Consumer<? extends CustomPacketPayload>> clientListeners = new HashMap<>();
         EIClient.registerPayloadHandlers(new ClientNetworkRegistrar() {
             @Override
             public <T extends CustomPacketPayload> void registerS2CHandler(CustomPacketPayload.Type<T> type, Consumer<T> listener) {
                 clientListeners.put(type.id(), listener);
             }
         });
-        *///? }
+        //? }
 
         EICommon.registerPayloads(new NetworkRegistrar() {
             @Override
@@ -112,15 +112,15 @@ public class EINeoForge implements EIPlatform {
             }
 
             //? if <1.21.11
-            //@SuppressWarnings("unchecked")
+            @SuppressWarnings("unchecked")
             @Override
             public <T extends CustomPacketPayload> void registerS2CPayload(CustomPacketPayload.Type<T> type, StreamCodec<RegistryFriendlyByteBuf, T> codec) {
                 //? if >=1.21.11 {
-                registrar.playToClient(type, codec);
-                //?} else {
-                /*final Consumer<T> consumer = (Consumer<T>) clientListeners.get(type.id());
+                /*registrar.playToClient(type, codec);
+                *///?} else {
+                final Consumer<T> consumer = (Consumer<T>) clientListeners.get(type.id());
                 registrar.playToClient(type, codec, (t, ctx) -> consumer.accept(t));
-                *///? }
+                //? }
             }
         });
     }

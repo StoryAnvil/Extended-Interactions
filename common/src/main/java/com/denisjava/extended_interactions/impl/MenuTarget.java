@@ -13,9 +13,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerLevel;
 //? if >=1.21.11 {
-import net.minecraft.server.permissions.LevelBasedPermissionSet;
+/*import net.minecraft.server.permissions.LevelBasedPermissionSet;
 import net.minecraft.server.permissions.PermissionSet;
-//?}
+*///?}
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -66,9 +66,9 @@ public abstract class MenuTarget {
         public CommandSourceStack createStack(ServerLevel level) {
             return new CommandSourceStack(CommandSource.NULL, pos.getCenter(), Vec2.ZERO, level,
                     //? if <1.21.11
-                    //2,
+                    2,
                     //? if >=1.21.11
-                    LevelBasedPermissionSet.GAMEMASTER,
+                    //LevelBasedPermissionSet.GAMEMASTER,
                     "EI BLOCK", Component.literal("EI BLOCK"), level.getServer(), null);
         }
 
@@ -113,9 +113,9 @@ public abstract class MenuTarget {
             assert entity != null;
             return new CommandSourceStack(CommandSource.NULL, entity.getPosition(1), Vec2.ZERO, level,
                     //? if <1.21.11
-                    //2,
+                    2,
                     //? if >=1.21.11
-                    LevelBasedPermissionSet.GAMEMASTER,
+                    //LevelBasedPermissionSet.GAMEMASTER,
                     "EI ENTITY", Component.translatable("extended_interactions.cmdentity", entity.getDisplayName()),
                     level.getServer(), entity);
         }

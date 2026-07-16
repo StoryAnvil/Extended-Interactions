@@ -20,7 +20,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -37,12 +37,12 @@ import java.util.stream.Stream;
 public class ExtendedInteractionsImpl {
     public static final EIProviderRegistry<EIBlockProvider> BLOCK_PROVIDERS = new EIProviderRegistry<>();
     public static final EIProviderRegistry<EIEntityProvider> ENTITY_PROVIDERS = new EIProviderRegistry<>();
-    private static final HashMap<Identifier, ExtInteraction> INTERACTIONS = new HashMap<>();
-    private static final HashMap<Identifier, MapCodec<? extends DataDrivenAction>> DD_ACTIONS = new HashMap<>();
+    private static final HashMap<ResourceLocation, ExtInteraction> INTERACTIONS = new HashMap<>();
+    private static final HashMap<ResourceLocation, MapCodec<? extends DataDrivenAction>> DD_ACTIONS = new HashMap<>();
     private static List<EIPlugin> ALL_PLUGINS = List.of();
     private static int frozen = 2;
 
-    public static final StreamCodec<ByteBuf, ExtInteraction> INTERACTION_STREAM_CODEC = Identifier.STREAM_CODEC.map(identifier -> {
+    public static final StreamCodec<ByteBuf, ExtInteraction> INTERACTION_STREAM_CODEC = ResourceLocation.STREAM_CODEC.map(identifier -> {
         ExtInteraction interaction = INTERACTIONS.get(identifier);
         if (interaction == null) throw new RuntimeException("Failed to decode interaction with id [" + identifier + "]. Maybe it does not exist on client?");
         return interaction;
@@ -70,7 +70,7 @@ public class ExtendedInteractionsImpl {
         INTERACTIONS.put(interaction.getId(), interaction);
     }
 
-    public static void registerAction(Identifier id, MapCodec<? extends DataDrivenAction> codec) {
+    public static void registerAction(ResourceLocation id, MapCodec<? extends DataDrivenAction> codec) {
         if (frozen <= 0) throw new IllegalStateException("Extended interactions registry is already frozen! You are registering actions too late.");
 
         if (DD_ACTIONS.containsKey(id))
@@ -79,7 +79,7 @@ public class ExtendedInteractionsImpl {
         DD_ACTIONS.put(id, codec);
     }
 
-    public static MapCodec<? extends DataDrivenAction> getActionCodec(Identifier id) {
+    public static MapCodec<? extends DataDrivenAction> getActionCodec(ResourceLocation id) {
         MapCodec<? extends DataDrivenAction> codec = DD_ACTIONS.get(id);
         if (codec == null) throw new IllegalArgumentException("Data Driven Action codec with id " + id + " does not exist!");
         return codec;
@@ -102,13 +102,13 @@ public class ExtendedInteractionsImpl {
         Optional<ResourceKey<Block>> optionalKey = BuiltInRegistries.BLOCK.getResourceKey(state.getBlock());
         if (optionalKey.isEmpty()) throw new AssertionError("BlockState with unregistered block? Nah. I'm not dealing with this");
         //? if >=1.21.11 {
-        Identifier key = optionalKey.get().identifier();
+        /*ResourceLocation key = optionalKey.get().identifier();
         @SuppressWarnings("OptionalGetWithoutIsPresent") // Block must be registered for previous code to work. No need to recheck
         Stream<TagKey<Block>> tags = BuiltInRegistries.BLOCK.get(optionalKey.get()).get().tags();
-        //?} else {
-        /*Identifier key = optionalKey.get().location();
+        *///?} else {
+        ResourceLocation key = optionalKey.get().location();
         Stream<TagKey<Block>> tags = BuiltInRegistries.BLOCK.getHolder(optionalKey.get().location()).get().tags();
-        *///? }
+        //? }
 
         for (Iterable<EIBlockProvider> providers : BLOCK_PROVIDERS.listAll(key, tags).toList()) {
             for (EIBlockProvider provider : providers) {
@@ -130,13 +130,13 @@ public class ExtendedInteractionsImpl {
         Optional<ResourceKey<EntityType<?>>> optionalKey = BuiltInRegistries.ENTITY_TYPE.getResourceKey(entity.getType());
         if (optionalKey.isEmpty()) throw new AssertionError("BlockState with unregistered entity type? Nah. I'm not dealing with this");
         //? if >=1.21.11 {
-        Identifier key = optionalKey.get().identifier();
+        /*ResourceLocation key = optionalKey.get().identifier();
         @SuppressWarnings("OptionalGetWithoutIsPresent") // Block must be registered for previous code to work. No need to recheck
         Stream<TagKey<EntityType<?>>> tags = BuiltInRegistries.ENTITY_TYPE.get(optionalKey.get()).get().tags();
-        //?} else {
-        /*Identifier key = optionalKey.get().location();
+        *///?} else {
+        ResourceLocation key = optionalKey.get().location();
         Stream<TagKey<EntityType<?>>> tags = BuiltInRegistries.ENTITY_TYPE.getHolder(optionalKey.get().location()).get().tags();
-        *///? }
+        //? }
 
         for (Iterable<EIEntityProvider> providers : ENTITY_PROVIDERS.listAll(key, tags).toList()) {
             for (EIEntityProvider provider : providers) {
@@ -177,7 +177,7 @@ public class ExtendedInteractionsImpl {
         } else throw new AssertionError("Bad interaction target!");
 
         EIUtils.scheduleOnServer(player.level().getServer(), () -> {
-            interaction.handleExecution(player, target);
+            interaction.handleExecution(player, target, packet.argumentId());
         });
     }
 

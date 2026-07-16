@@ -51,3 +51,4 @@ mods.txt
 .venv
 publish.sh
 testserver.py
+changelog.md

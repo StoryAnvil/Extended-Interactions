@@ -5,7 +5,7 @@ import com.denisjava.extended_interactions.client.EIClient;
 import com.denisjava.extended_interactions.impl.MenuTarget;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 public record KeymappingAction(String keymapping) implements DataDrivenAction {
@@ -18,7 +18,7 @@ public record KeymappingAction(String keymapping) implements DataDrivenAction {
     }
 
     @Override
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return EICommon.id("key");
     }
 }

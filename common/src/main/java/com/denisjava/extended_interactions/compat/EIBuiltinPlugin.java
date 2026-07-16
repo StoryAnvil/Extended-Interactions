@@ -11,21 +11,23 @@ import com.denisjava.extended_interactions.impl.ExtInteractionIcon.ItemStackIcon
 import com.denisjava.extended_interactions.util.EIUtils;
 import com.denisjava.extended_interactions.util.ThrowableEIResult;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.*;
 //? if <1.21.11 {
-/*import net.minecraft.world.entity.Saddleable;
+import net.minecraft.world.entity.Saddleable;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.npc.AbstractVillager;
-*///?} else {
-import net.minecraft.world.entity.animal.sheep.Sheep;
+//?} else {
+/*import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.npc.villager.AbstractVillager;
-//? }
+*///? }
 import net.minecraft.world.entity.decoration.LeashFenceKnotEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import static com.denisjava.extended_interactions.EICommon.id;
 
@@ -44,6 +46,7 @@ public class EIBuiltinPlugin implements EIPlugin {
         registrar.register(REMOVE_LEASH);
         registrar.register(EQUIP_SADDLE);
         registrar.register(VILLAGER_TRADING);
+        registrar.register(DELAY);
     }
 
     @Override
@@ -56,6 +59,7 @@ public class EIBuiltinPlugin implements EIPlugin {
         registrar.universalEntityProvider(this::saddleProvider);
         registrar.entityProvider(EntityType.VILLAGER, this::tradingProvider);
         registrar.entityProvider(EntityType.WANDERING_TRADER, this::tradingProvider);
+        registrar.blockProvider(Blocks.REPEATER, DELAY::blockProvider);
     }
 
     @Override
@@ -64,7 +68,7 @@ public class EIBuiltinPlugin implements EIPlugin {
     }
 
     @Override
-    public Identifier getUID() {
+    public ResourceLocation getUID() {
         return id("builtin");
     }
 
@@ -135,7 +139,7 @@ public class EIBuiltinPlugin implements EIPlugin {
     private final SaddleInteraction EQUIP_SADDLE = new SaddleInteraction(id("mc/equip_saddle"), new ItemStackIcon(Items.SADDLE), this);
     private void saddleProvider(EIResultCollector collector, Level level, Player player, Entity entity) throws ThrowableEIResult {
         //? if <1.21.11 {
-        /*if (!(entity instanceof Saddleable saddleable)) {
+        if (!(entity instanceof Saddleable saddleable)) {
             collector.add(EIResult.fail(EQUIP_SADDLE));
             return;
         }
@@ -147,8 +151,8 @@ public class EIBuiltinPlugin implements EIPlugin {
             collector.add(EIResult.fail(EQUIP_SADDLE).addReason("nah"));
             return;
         }
-        *///? } else {
-        if (!(entity instanceof Mob mob)) {
+        //? } else {
+        /*if (!(entity instanceof Mob mob)) {
             collector.add(EIResult.fail(EQUIP_SADDLE));
             return;
         }
@@ -160,7 +164,7 @@ public class EIBuiltinPlugin implements EIPlugin {
             collector.add(EIResult.fail(EQUIP_SADDLE).addReason("nah"));
             return;
         }
-        //? }
+        *///? }
         if (EIUtils.findItem(player, Items.SADDLE) == -1) {
             collector.add(EIResult.fail(EQUIP_SADDLE).addReason("no_item"));
             return;
@@ -177,4 +181,8 @@ public class EIBuiltinPlugin implements EIPlugin {
         }
         collector.add(EIResult.success(VILLAGER_TRADING));
     }
+
+    // == CONFIGURATORS ==
+    private final StateConfiguratorInteraction<Integer> DELAY = new StateConfiguratorInteraction<>(id("mc/delay_cfg"), new ItemStackIcon(Items.COMPARATOR),
+            BlockStateProperties.DELAY, this);
 }

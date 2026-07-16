@@ -9,7 +9,7 @@ import com.denisjava.extended_interactions.util.ThrowableEIResult;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -25,13 +25,13 @@ public class DataDrivenInteraction extends ExtInteraction {
     ).apply(inst, InteractionTemplate::new));
 
     private final List<DataDrivenAction> actions;
-    private DataDrivenInteraction(Identifier id, ExtInteractionIcon icon, EIPlugin declaringPlugin, List<DataDrivenAction> actions) {
+    private DataDrivenInteraction(ResourceLocation id, ExtInteractionIcon icon, EIPlugin declaringPlugin, List<DataDrivenAction> actions) {
         super(id, icon, declaringPlugin);
         this.actions = actions;
     }
 
     @Override
-    public void handleExecution(Player player, MenuTarget target) {
+    public void handleExecution(Player player, MenuTarget target, String argumentId) {
         for (DataDrivenAction action : actions) {
             action.handle(player, target);
         }

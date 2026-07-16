@@ -12,7 +12,7 @@ import com.denisjava.extended_interactions.network.EntityMenuRequestPacket;
 import com.denisjava.extended_interactions.network.MenuResultPacket;
 import com.denisjava.extended_interactions.network.RunExtInteractionPacket;
 import com.denisjava.extended_interactions.util.EIUtils;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +32,8 @@ public class EICommon {
         return platform;
     }
 
-    public static Identifier id(String path) {
-        return Identifier.fromNamespaceAndPath(MOD_ID, path);
+    public static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
     public static void registerPayloads(EIPlatform.NetworkRegistrar registrar) {
@@ -83,7 +83,7 @@ public class EICommon {
             if (!data.getModId().equals(plugin.getDeclaringModId()))
                 throw new RuntimeException("Plugin's getDeclaringModId() does not return \"" + data.getModId() + "\"");
             if (!data.getModId().equals(Objects.requireNonNull(plugin.getUID()).getNamespace()))
-                throw new RuntimeException("Plugin's getUID() returns Identifier with incorrect namespace");
+                throw new RuntimeException("Plugin's getUID() returns ResourceLocation with incorrect namespace");
 
             return plugin;
         } catch (ClassNotFoundException | RuntimeException e) {

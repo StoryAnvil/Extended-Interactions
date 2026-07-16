@@ -9,11 +9,11 @@ import com.denisjava.extended_interactions.util.ThrowableEIResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 //? if <1.21.11
-//import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.ItemPredicate;
 //? if >=1.21.11
-import net.minecraft.advancements.criterion.ItemPredicate;
+//import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
@@ -50,7 +50,7 @@ public record UseItemAction(ItemPredicate item) implements DataDrivenAction {
     }
 
     @Override
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return EICommon.id("use_item");
     }
 }

@@ -4,7 +4,7 @@ import com.denisjava.extended_interactions.EICommon;
 import com.denisjava.extended_interactions.impl.MenuTarget;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 
@@ -25,7 +25,7 @@ public record CommandAction(String command) implements DataDrivenAction {
     }
 
     @Override
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return EICommon.id("command");
     }
 }

@@ -9,17 +9,17 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 //? if <1.21.11 {
-/*import net.minecraft.advancements.critereon.NbtPredicate;
+import net.minecraft.advancements.critereon.NbtPredicate;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
-*///? } else {
-import net.minecraft.advancements.criterion.NbtPredicate;
+//? } else {
+/*import net.minecraft.advancements.criterion.NbtPredicate;
 import net.minecraft.advancements.criterion.StatePropertiesPredicate;
-//? }
+*///? }
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class DataDrivenProviders {
-    public static final Codec<Identifier> LITERAL_OR_TAG_CODEC = Codec.STRING.comapFlatMap(DataDrivenProviders::readLOR, DataDrivenProviders::writeLOR);
+    public static final Codec<ResourceLocation> LITERAL_OR_TAG_CODEC = Codec.STRING.comapFlatMap(DataDrivenProviders::readLOR, DataDrivenProviders::writeLOR);
     public static final Codec<BlockStatePredicate> BLOCK_STATE_PREDICATE_CODEC = RecordCodecBuilder.create(inst -> inst.group(
             StatePropertiesPredicate.CODEC.optionalFieldOf("state").forGetter(BlockStatePredicate::properties),
             NbtPredicate.CODEC.optionalFieldOf("nbt").forGetter(BlockStatePredicate::nbt),
@@ -59,7 +59,7 @@ public class DataDrivenProviders {
         }
     }
 
-    public record BlockProvider(Identifier subjectId, List<BlockStatePredicate> predicate) implements ProviderRegistrar {
+    public record BlockProvider(ResourceLocation subjectId, List<BlockStatePredicate> predicate) implements ProviderRegistrar {
         public EIBlockProvider build(final DataDrivenInteraction interaction) {
             if (predicate().isEmpty()) {
                 return (collector, level, user, pos, state) -> {
@@ -87,7 +87,7 @@ public class DataDrivenProviders {
 
     public record EntityPredicate(NbtPredicate nbt, Optional<Component> message) { }
 
-    public record EntityProvider(Identifier subjectId, List<EntityPredicate> predicate) implements ProviderRegistrar {
+    public record EntityProvider(ResourceLocation subjectId, List<EntityPredicate> predicate) implements ProviderRegistrar {
         public EIEntityProvider build(final DataDrivenInteraction interaction) {
             if (predicate.isEmpty())
                 return (collector, level, user, entity) -> {
@@ -113,7 +113,7 @@ public class DataDrivenProviders {
         }
     }
 
-    private static String writeLOR(Identifier rl) {
+    private static String writeLOR(ResourceLocation rl) {
         if (rl.getNamespace().equals("tags")) {
             int d = rl.getPath().indexOf('/');
             if (d == -1) return "#minecraft:" + rl.getPath();
@@ -123,14 +123,14 @@ public class DataDrivenProviders {
         }
         return rl.toString();
     }
-    private static DataResult<Identifier> readLOR(String s) {
+    private static DataResult<ResourceLocation> readLOR(String s) {
         if (s.startsWith("#")) {
-            DataResult<Identifier> rl = Identifier.read(s.substring(1));
+            DataResult<ResourceLocation> rl = ResourceLocation.read(s.substring(1));
             if (rl.isError()) return rl;
-            Identifier r = rl.getOrThrow();
-            return DataResult.success(Identifier.fromNamespaceAndPath("tags", r.getNamespace() + '/' + r.getPath()));
+            ResourceLocation r = rl.getOrThrow();
+            return DataResult.success(ResourceLocation.fromNamespaceAndPath("tags", r.getNamespace() + '/' + r.getPath()));
         }
-        return Identifier.read(s);
+        return ResourceLocation.read(s);
     }
     public interface ProviderRegistrar {
         void registerProvider(DataDrivenInteraction interaction);

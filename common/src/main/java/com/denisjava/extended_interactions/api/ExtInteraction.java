@@ -6,15 +6,12 @@ import com.denisjava.extended_interactions.util.ThrowableEIResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 /**
  * Base class for all extended interactions.<br>
@@ -22,17 +19,17 @@ import java.util.List;
  */
 @ApiStatus.NonExtendable
 public abstract class ExtInteraction {
-    protected final Identifier id;
+    protected final ResourceLocation id;
     protected final ExtInteractionIcon icon;
     protected final EIPlugin declaringPlugin;
 
-    protected ExtInteraction(Identifier id, ExtInteractionIcon icon, EIPlugin declaringPlugin) {
+    protected ExtInteraction(ResourceLocation id, ExtInteractionIcon icon, EIPlugin declaringPlugin) {
         this.id = id;
         this.icon = icon;
         this.declaringPlugin = declaringPlugin;
     }
 
-    public final Identifier getId() {
+    public final ResourceLocation getId() {
         return id;
     }
 
@@ -61,11 +58,13 @@ public abstract class ExtInteraction {
 
     /**
      * Handles execution of this extended interaction.<br>
-     * If you are using {@link JavaInteraction}, override {@link JavaInteraction#handleBlockExecution(Player, Level, BlockPos, BlockState)}, {@link JavaInteraction#handleEntityExecution(Player, Level, Entity)} instead
-     * @param player Player who executed the interaction
-     * @param target Interaction's target
+     * If you are using {@link JavaInteraction}, override {@link JavaInteraction#handleBlockExecution(Player, Level, BlockPos, BlockState, String)}, {@link JavaInteraction#handleEntityExecution(Player, Level, Entity, String)} instead
+     *
+     * @param player     Player who executed the interaction
+     * @param target     Interaction's target
+     * @param argumentId Empty string if no argument is chosen.
      */
-    public abstract void handleExecution(Player player, MenuTarget target);
+    public abstract void handleExecution(Player player, MenuTarget target, String argumentId);
 
     /**
      * @return whether this interaction is client-side or not. If <code>true</code>, it won't be sent to server by any means.

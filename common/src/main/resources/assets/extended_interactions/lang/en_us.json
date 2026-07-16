@@ -47,7 +47,7 @@
     "extended_interactions.eis.help": "Select interactions to visually hide. This is done client-side",
     "key.category.extended_interactions.main": "Extended Interactions",
     "debug.extended_interactions.success": "§aHIT %s : icon=%s",
-    "debug.extended_interactions.silent_failure": "§8SILENT %s",
+    "debug.extended_interactions.argument": "┃ %s : name=%s icon=%s",
     "debug.extended_interactions.failure": "§cMISS %s : %s [errcode: %s]",
     "debug.extended_interactions.no_results": "§7No results",
     "debug.extended_interactions.results": "Results (%s total):",
@@ -78,6 +78,7 @@
     "extinter.extended_interactions.mc/villager_trade": "Trade",
     "extinter.extended_interactions.mc/villager_trade.no_trades": "No trades available",
     "extinter.extended_interactions.mc/remove_leash": "Detach Lead",
+    "extinter.extended_interactions.mc/delay_cfg": "Configure delay",
     "ei_plugin.extended_interactions.debug": "EI Debug",
     "ei_plugin.extended_interactions.custom": "Modpack provided",
     "ei_plugin.extended_interactions.builtin": "Extended Interactions Builtins"

@@ -14,7 +14,7 @@ import com.denisjava.extended_interactions.util.EIUtils;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -48,6 +48,8 @@ public class RadialMenuData {
         l0: for (RadialMenuButton button : uncategorized) {
             String category = getCategory(button);
 
+            button = wrapIfNeeded(button);
+
             if (category == null) {
                 // Add item directly if it does not have a category
                 categorized.add(button);
@@ -68,8 +70,11 @@ public class RadialMenuData {
             categorized.add(data);
         }
 
+        //EICommon.LOG.info("Finished categorizing RadialMenuData {}", categorized);
+
         // Iff categorized buttons consists of only one category, expand this category
-        if (EIClientConfig.HANDLER.instance().dontCollapseToSingleCategory && categorized.size() == 1 && categorized.getFirst() instanceof CategoryData) {
+        if (EIClientConfig.HANDLER.instance().dontCollapseToSingleCategory && categorized.size() == 1 && categorized.getFirst() instanceof CategoryData data
+                && !data.id.getNamespace().equals("arguments")) {
             return uncategorized;
         }
 
@@ -86,6 +91,18 @@ public class RadialMenuData {
         return categorized;
     }
 
+    private static RadialMenuButton wrapIfNeeded(RadialMenuButton button) {
+        if (button instanceof SuccessfulResult result && result.getArguments() != null) {
+            ResourceLocation id = ResourceLocation.fromNamespaceAndPath("arguments", result.getId().getNamespace() + "/" + result.getId().getPath());
+            CategoryData category = new CategoryData(id.toString(), result.getName(), result.getIcon(), id);
+            category.buttons.addAll(result.getArguments().stream()
+                    .map(a -> (RadialMenuButton) new ArgumentButton(result, a))
+                    .toList());
+            return category;
+        }
+        return button;
+    }
+
     private static String getCategory(RadialMenuButton button) {
         if (button instanceof EIResult r) {
             String id = r.getInteraction().getId().toString();
@@ -98,18 +115,31 @@ public class RadialMenuData {
 
     public static class CategoryData extends RadialMenuData implements RadialMenuButton, ClientRadialMenuButton {
         private final String name;
+        private final Component displayName;
         private final ExtInteractionIcon icon;
+        private final ResourceLocation id;
         private RadialMenuData parent = null;
         private CategoryData(String name, ExtInteractionIcon icon) {
             super(new ArrayList<>());
             buttons.add(new CategoryReturnButton(this));
             this.name = name;
             this.icon = icon;
+            displayName = Component.literal(name);
+            id = ResourceLocation.fromNamespaceAndPath("category", name.toLowerCase().replace(" ", "_"));
+        }
+
+        private CategoryData(String name, Component displayName, ExtInteractionIcon icon, ResourceLocation id) {
+            super(new ArrayList<>());
+            buttons.add(new CategoryReturnButton(this));
+            this.name = name;
+            this.icon = icon;
+            this.displayName = displayName;
+            this.id = id;
         }
 
         @Override
         public Component getName() {
-            return Component.literal(name);
+            return displayName;
         }
 
         @Override
@@ -130,13 +160,18 @@ public class RadialMenuData {
         }
 
         @Override
-        public Identifier getId() {
-            return Identifier.fromNamespaceAndPath("category", name);
+        public ResourceLocation getId() {
+            return id;
         }
 
         @Override
         public @Nullable String _categoryNameHook() {
             return name;
+        }
+
+        @Override
+        public String toString() {
+            return "Category[" + buttons + "]";
         }
     }
     private record CategoryReturnButton(CategoryData owner) implements RadialMenuButton, ClientRadialMenuButton {
@@ -158,7 +193,7 @@ public class RadialMenuData {
         }
 
         @Override
-        public Identifier getId() {
+        public ResourceLocation getId() {
             return EICommon.id("back");
         }
     }

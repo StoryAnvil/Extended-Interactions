@@ -5,7 +5,7 @@ import com.denisjava.extended_interactions.api.InteractionRegistrar;
 import com.denisjava.extended_interactions.config.DataDrivenAction;
 import com.denisjava.extended_interactions.util.CheckedPluginRegistrar;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public class InteractionRegistrarImpl extends CheckedPluginRegistrar implements InteractionRegistrar {
     @Override
@@ -18,7 +18,7 @@ public class InteractionRegistrarImpl extends CheckedPluginRegistrar implements 
     }
 
     @Override
-    public void registerDataDrivenAction(Identifier id, MapCodec<? extends DataDrivenAction> codec) {
+    public void registerDataDrivenAction(ResourceLocation id, MapCodec<? extends DataDrivenAction> codec) {
         assertId(id);
         ExtendedInteractionsImpl.registerAction(id, codec);
     }

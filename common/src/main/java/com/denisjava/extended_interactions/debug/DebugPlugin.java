@@ -9,7 +9,7 @@ import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import dev.isxander.yacl3.api.LabelOption;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -68,7 +68,7 @@ public class DebugPlugin implements EIPlugin {
     }
 
     @Override
-    public Identifier getUID() {
+    public ResourceLocation getUID() {
         return id("debug");
     }
 
