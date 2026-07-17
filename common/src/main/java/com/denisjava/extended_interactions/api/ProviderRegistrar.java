@@ -2,10 +2,12 @@ package com.denisjava.extended_interactions.api;
 
 import com.denisjava.extended_interactions.api.providers.EIBlockProvider;
 import com.denisjava.extended_interactions.api.providers.EIEntityProvider;
+import com.denisjava.extended_interactions.compat.EIContainer;
 import net.minecraft.core.Holder;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 
 public interface ProviderRegistrar {
     /**

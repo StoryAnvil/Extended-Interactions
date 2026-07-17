@@ -8,6 +8,7 @@ import com.denisjava.extended_interactions.api.InteractionRegistrar;
 import com.denisjava.extended_interactions.api.ProviderRegistrar;
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 import vazkii.patchouli.common.item.PatchouliItems;
 
 import static com.denisjava.extended_interactions.EICommon.id;
@@ -15,22 +16,22 @@ import static com.denisjava.extended_interactions.EICommon.id;
 @EIPluginClass(requiredMods = "patchouli")
 public class PatchouliCompatPlugin implements EIPlugin {
     @Override
-    public void registerInteractions(InteractionRegistrar registrar) {
+    public void registerInteractions(@NotNull InteractionRegistrar registrar) {
         registrar.register(BOOK_LOOKUP);
     }
 
     @Override
-    public void registerProviders(ProviderRegistrar registrar) {
+    public void registerProviders(@NotNull ProviderRegistrar registrar) {
         registrar.universalBlockProvider(BOOK_LOOKUP);
     }
 
     @Override
-    public String getDeclaringModId() {
+    public @NotNull String getDeclaringModId() {
         return EICommon.MOD_ID;
     }
 
     @Override
-    public ResourceLocation getUID() {
+    public @NotNull ResourceLocation getUID() {
         return id("patchouli");
     }
 

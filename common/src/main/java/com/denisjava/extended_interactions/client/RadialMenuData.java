@@ -187,6 +187,7 @@ public class RadialMenuData {
         }
     }
     private record CategoryReturnButton(CategoryData owner) implements RadialMenuButton, ClientRadialMenuButton {
+        private static final ExtInteractionIcon.TexturedSpriteIcon ICON = new ExtInteractionIcon.TexturedSpriteIcon(EICommon.id("back"));
         @Override
         public void executeClientSide(RadialMenuScreen screen) {
             screen.data = owner.parent;
@@ -201,7 +202,7 @@ public class RadialMenuData {
 
         @Override
         public ExtInteractionIcon getIcon() {
-            return new ExtInteractionIcon.ItemStackIcon(Items.PINK_GLAZED_TERRACOTTA);
+            return ICON;
         }
 
         @Override

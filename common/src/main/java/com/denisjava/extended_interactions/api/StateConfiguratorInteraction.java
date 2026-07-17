@@ -18,9 +18,10 @@ import net.minecraft.world.level.block.state.properties.Property;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class StateConfiguratorInteraction<T extends Comparable<T>> extends JavaInteraction {
-    private final Property<T> property;
+    protected final Property<T> property;
     public StateConfiguratorInteraction(ResourceLocation id, ExtInteractionIcon icon, Property<T> property, EIPlugin declaringPlugin) {
         super(id, icon, declaringPlugin);
         this.property = property;
@@ -51,7 +52,6 @@ public class StateConfiguratorInteraction<T extends Comparable<T>> extends JavaI
      * Simple {@link EIBlockProvider} for this interaction.
      */
     public void blockProvider(EIResultCollector collector, Level level, Player player, BlockPos pos, BlockState state) throws ThrowableEIResult {
-        //noinspection DataFlowIssue
         //? if >=1.21.11
         //if (player.gameMode().isBlockPlacingRestricted()) {
         //? if <1.21.11
@@ -86,5 +86,30 @@ public class StateConfiguratorInteraction<T extends Comparable<T>> extends JavaI
 
     public Property<T> getProperty() {
         return property;
+    }
+
+    public static class WithIcons<T extends Comparable<T>> extends StateConfiguratorInteraction<T> {
+        private final Function<T, ExtInteractionIcon> iconMapper;
+        public WithIcons(ResourceLocation id, ExtInteractionIcon icon, Property<T> property, EIPlugin declaringPlugin, Function<T, ExtInteractionIcon> iconMapper) {
+            super(id, icon, property, declaringPlugin);
+            this.iconMapper = iconMapper;
+        }
+
+        @Override
+        public ExtInteractionIcon getIcon(String overrideName) {
+            Optional<T> optional = property.getValue(overrideName);
+            if (optional.isEmpty()) return ExtInteractionIcon.ERROR_ICON;
+            return iconMapper.apply(optional.get());
+        }
+
+        @Override
+        public InteractionArgument buildArgument(String id, T value) {
+            Component name = null;
+            if (iconMapper.apply(value) instanceof ExtInteractionIcon.ComponentIcon(Component text)) name = text;
+
+            return new InteractionArgument(id,
+                    Optional.of(name == null ? Component.literal(property.getName(value)) : name),
+                    Optional.of(property.getName(value)));
+        }
     }
 }

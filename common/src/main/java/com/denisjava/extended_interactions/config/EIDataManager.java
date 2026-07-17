@@ -12,6 +12,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class EIDataManager implements EIPlugin {
     }
 
     @Override
-    public void registerProviders(ProviderRegistrar providerRegistrar) {
+    public void registerProviders(@NotNull ProviderRegistrar providerRegistrar) {
         for (Pair<DataDrivenInteraction, List<DataDrivenProviders.ProviderRegistrar>> interaction : interactions) {
             DataDrivenInteraction i = interaction.getFirst();
             for (DataDrivenProviders.ProviderRegistrar registrar : interaction.getSecond()) {
@@ -82,19 +83,19 @@ public class EIDataManager implements EIPlugin {
     }
 
     @Override
-    public void registerInteractions(InteractionRegistrar registrar) {
+    public void registerInteractions(@NotNull InteractionRegistrar registrar) {
         for (Pair<DataDrivenInteraction, List<DataDrivenProviders.ProviderRegistrar>> interaction : interactions) {
             registrar.register(interaction.getFirst());
         }
     }
 
     @Override
-    public String getDeclaringModId() {
+    public @NotNull String getDeclaringModId() {
         return EICommon.MOD_ID;
     }
 
     @Override
-    public ResourceLocation getUID() {
+    public @NotNull ResourceLocation getUID() {
         return EICommon.id("custom");
     }
 

@@ -3,6 +3,7 @@ package com.denisjava.extended_interactions.impl;
 import com.denisjava.extended_interactions.api.providers.EIBlockProvider;
 import com.denisjava.extended_interactions.api.providers.EIEntityProvider;
 import com.denisjava.extended_interactions.api.ProviderRegistrar;
+import com.denisjava.extended_interactions.compat.EIContainer;
 import com.denisjava.extended_interactions.util.EIProviderRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -10,6 +11,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
 
 import java.util.Optional;
 

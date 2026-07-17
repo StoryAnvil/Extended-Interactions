@@ -37,7 +37,6 @@ public class RadialMenuScreen extends Screen {
     private List<RadialMenuButton> original;
 
     private final MenuTarget target;
-    private List<SuccessfulResult> successfulResults = List.of();
     private List<FailedResult> failedResults = List.of();
     private ActionData[] successful = new ActionData[0];
     private boolean serverReplied = false;
@@ -134,7 +133,7 @@ public class RadialMenuScreen extends Screen {
      */
     void onDataUpdate() {
         EIClientConfig config = EIClientConfig.HANDLER.instance();
-        final int radius = config.radialMenuRadius;
+        int radius = config.radialMenuRadius;
         Map<String, ExtInteractionState> stateMap = config.interactions;
 
         /*legacy: {
@@ -158,6 +157,19 @@ public class RadialMenuScreen extends Screen {
                 );
             }
         }*/
+
+//        EICommon.LOG.info("{}", radius);
+//        for (int i = 0; i < 60; i++) {
+//            double bA = (float) 1 / successful.length * Math.PI * 2;
+//            int bX = Math.toIntExact(Math.round(Math.sin(bA) * radius));
+//            int dY = radius - Math.toIntExact(Math.round(-Math.cos(bA) * radius));
+//            if (bX * bX + dY * dY > 81) {
+//                break;
+//            }
+//            radius++;
+//        }
+//        EICommon.LOG.info("{}", radius);
+
 
         successful = new ActionData[data.getButtons().size()];
         for (int i = 0; i < successful.length; i++) {

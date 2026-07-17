@@ -1,14 +1,25 @@
 package com.denisjava.extended_interactions.util;
 
 import com.denisjava.extended_interactions.EICommon;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Comparator;
@@ -73,5 +84,26 @@ public class EIUtils {
     public static <R, INDEX> Stream<R> preservedSort(Function<R, INDEX> mapper, List<R> original, Stream<R> unordered) {
         List<INDEX> indices = original.stream().map(mapper).toList();
         return unordered.sorted(Comparator.comparingInt(o -> indices.indexOf(mapper.apply(o))));
+    }
+
+    public static TagKey<Block> blocks(String name) {
+        return TagKey.create(Registries.BLOCK, EICommon.id(name));
+    }
+
+    public static TagKey<EntityType<?>> entities(String name) {
+        return TagKey.create(Registries.ENTITY_TYPE, EICommon.id(name));
+    }
+
+    public static <T> String encodeToString(T object, Codec<T> codec) {
+        return codec.encodeStart(JsonOps.COMPRESSED, object).getOrThrow().toString();
+    }
+    public static <T> @Nullable T decodeFromString(String object, Codec<T> codec) {
+        try {
+            DataResult<Pair<T, JsonElement>> dataResult = codec.decode(JsonOps.COMPRESSED, JsonParser.parseString(object));
+            if (dataResult.isError()) return null;
+            return dataResult.getOrThrow().getFirst();
+        } catch (com.google.gson.JsonSyntaxException e) {
+            return null;
+        }
     }
 }

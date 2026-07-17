@@ -1,0 +1,11 @@
+{
+    "replace": false,
+    "values": [
+        { "id": "#c:player_workstations/furnaces", "required": false },
+        { "id": "#c:smokers", "required": false },
+        { "id": "#c:furnaces", "required": false },
+        "minecraft:furnace",
+        "minecraft:smoker",
+        "minecraft:blast_furnace"
+    ]
+}

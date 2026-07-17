@@ -2,6 +2,7 @@ package com.denisjava.extended_interactions.api;
 
 import dev.isxander.yacl3.api.OptionGroup;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Interface for all extended interactions plugins.<br>
@@ -13,29 +14,29 @@ public interface EIPlugin {
      * {@link EIPlugin#registerInteractions(InteractionRegistrar)}.<br>
      * Do all your preparations here.
      */
-    default void init() {};
+    default void init() {}
 
     /**
      * Register interaction providers during this method.<br>
      * Use methods from {@link ProviderRegistrar} api class.<br>
      * Providers should work both on logical client and logical server.
      */
-    default void registerProviders(ProviderRegistrar registrar) {};
+    default void registerProviders(ProviderRegistrar registrar) {}
 
     /**
      * Register interactions during this method.
      */
-    default void registerInteractions(InteractionRegistrar registrar) {};
+    default void registerInteractions(InteractionRegistrar registrar) {}
 
     /**
      * @return mod id of mod that created this plugin. Mismatched values will cause errors!
      */
-    String getDeclaringModId();
+    @NotNull String getDeclaringModId();
 
     /**
      * @return unique identifier for this plugin. Namespace must match {@link EIPlugin#getDeclaringModId}
      */
-    ResourceLocation getUID();
+    @NotNull ResourceLocation getUID();
 
     /**
      * Create client config options for this plugin.<br>

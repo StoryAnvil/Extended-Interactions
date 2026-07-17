@@ -15,6 +15,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 
 import static com.denisjava.extended_interactions.EICommon.id;
 
@@ -32,7 +33,7 @@ public class DebugPlugin implements EIPlugin {
     private final DebugInteraction DESYNC_TEST = new DebugInteraction(id("desync"), new ExtInteractionIcon.ItemStackIcon(Items.JIGSAW), this);
 
     @Override
-    public void registerInteractions(InteractionRegistrar registrar) {
+    public void registerInteractions(@NotNull InteractionRegistrar registrar) {
         for (JavaInteraction i : DEBUG) {
             registrar.register(i);
         }
@@ -40,7 +41,7 @@ public class DebugPlugin implements EIPlugin {
     }
 
     @Override
-    public void registerProviders(ProviderRegistrar registrar) {
+    public void registerProviders(@NotNull ProviderRegistrar registrar) {
         for (JavaInteraction i : DEBUG) {
             registrar.blockProvider(Blocks.DIAMOND_BLOCK, constantProvider(i));
         }
@@ -63,17 +64,17 @@ public class DebugPlugin implements EIPlugin {
     }
 
     @Override
-    public String getDeclaringModId() {
+    public @NotNull String getDeclaringModId() {
         return EICommon.MOD_ID;
     }
 
     @Override
-    public ResourceLocation getUID() {
+    public @NotNull ResourceLocation getUID() {
         return id("debug");
     }
 
     @Override
-    public void createClientYACLConfigs(EIYACLConfigFactory factory) {
+    public void createClientYACLConfigs(@NotNull EIYACLConfigFactory factory) {
         factory.create()
                 .option(LabelOption.create(Component.literal("YACL Compat test")));
     }

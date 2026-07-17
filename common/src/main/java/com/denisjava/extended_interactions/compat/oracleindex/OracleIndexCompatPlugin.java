@@ -9,28 +9,29 @@ import com.denisjava.extended_interactions.api.ProviderRegistrar;
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.NotNull;
 
 import static com.denisjava.extended_interactions.EICommon.id;
 
 @EIPluginClass(requiredMods = "oracle_index")
 public class OracleIndexCompatPlugin implements EIPlugin {
     @Override
-    public void registerInteractions(InteractionRegistrar registrar) {
+    public void registerInteractions(@NotNull InteractionRegistrar registrar) {
         registrar.register(WIKI_LOOKUP);
     }
 
     @Override
-    public void registerProviders(ProviderRegistrar registrar) {
+    public void registerProviders(@NotNull ProviderRegistrar registrar) {
         registrar.universalBlockProvider(WIKI_LOOKUP);
     }
 
     @Override
-    public String getDeclaringModId() {
+    public @NotNull String getDeclaringModId() {
         return EICommon.MOD_ID;
     }
 
     @Override
-    public ResourceLocation getUID() {
+    public @NotNull ResourceLocation getUID() {
         return id("oracle_index");
     }
 

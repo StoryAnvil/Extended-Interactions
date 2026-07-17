@@ -2,9 +2,13 @@ package com.denisjava.extended_interactions.compat;
 
 import com.denisjava.extended_interactions.api.EIPlugin;
 import com.denisjava.extended_interactions.api.JavaInteraction;
+import com.denisjava.extended_interactions.api.providers.EIEntityProvider;
+import com.denisjava.extended_interactions.api.providers.EIResult;
+import com.denisjava.extended_interactions.api.providers.EIResultCollector;
 import com.denisjava.extended_interactions.impl.ExtInteractionIcon;
 import com.denisjava.extended_interactions.util.EIPlayer;
 import com.denisjava.extended_interactions.util.EIUtils;
+import com.denisjava.extended_interactions.util.ThrowableEIResult;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -15,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 
-public class SaddleInteraction extends JavaInteraction {
+public class SaddleInteraction extends JavaInteraction implements EIEntityProvider {
     public SaddleInteraction(ResourceLocation id, ExtInteractionIcon icon, EIPlugin declaringPlugin) {
         super(id, icon, declaringPlugin);
     }
@@ -53,5 +57,41 @@ public class SaddleInteraction extends JavaInteraction {
             }
         }
         *///? }
+    }
+
+    @Override
+    public void collectForEntity(EIResultCollector collector, Level level, Player user, Entity entity) throws ThrowableEIResult {
+        //? if <1.21.11 {
+        if (!(entity instanceof net.minecraft.world.entity.Saddleable saddleable)) {
+            collector.add(EIResult.fail(this));
+            return;
+        }
+        if (saddleable.isSaddled()) {
+            collector.add(EIResult.fail(this));
+            return;
+        }
+        if (!saddleable.isSaddleable()) {
+            collector.add(EIResult.fail(this).addReason("nah"));
+            return;
+        }
+        //? } else {
+        /*if (!(entity instanceof Mob mob)) {
+            collector.add(EIResult.fail(this));
+            return;
+        }
+        if (mob.isSaddled()) {
+            collector.add(EIResult.fail(this));
+            return;
+        }
+        if (!mob.isEquippableInSlot(new ItemStack(Items.SADDLE), EquipmentSlot.SADDLE)) {
+            collector.add(EIResult.fail(this).addReason("nah"));
+            return;
+        }
+        *///? }
+        if (EIUtils.findItem(user, Items.SADDLE) == -1) {
+            collector.add(EIResult.fail(this).addReason("no_item"));
+            return;
+        }
+        collector.add(EIResult.success(this));
     }
 }

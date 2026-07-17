@@ -28,7 +28,7 @@ dependencies {
         implementation("maven.modrinth:nU0bVIaL:${commonMod.prop("neoforgePatchouli")}")
     }
     if (commonMod.prop("neoforgeOracleIndex") != "NONE") {
-        compileOnly("maven.modrinth:J8MMsNrL:${commonMod.prop("neoforgeOracleIndex")}")
+        implementation("maven.modrinth:J8MMsNrL:${commonMod.prop("neoforgeOracleIndex")}")
     }
     if (commonMod.prop("neoforgeArchAPI") != "NONE") {
         runtimeOnly("maven.modrinth:lhGA9TYQ:${commonMod.prop("neoforgeArchAPI")}")
