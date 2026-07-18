@@ -49,7 +49,6 @@ runs
 ### Other ###
 mods.txt
 .venv
-publish.sh
 testserver.py
 changelog.md
 /test_assets/dev_libs

@@ -87,9 +87,10 @@
     "extinter.extended_interactions.mc/take.empty": "Block is empty",
     "extinter.extended_interactions.patchouli/lookup": "Lookup in Patchouli book",
     "extinter.extended_interactions.patchouli/lookup1": "Lookup in %s",
-    "extinter.extended_interactions.patchouli/oracle_index/lookup": "Lookup in Oracle Index",
+    "extinter.extended_interactions.oracle_index/lookup": "Lookup in Oracle Index",
     "ei_plugin.extended_interactions.debug": "EI Debug",
     "ei_plugin.extended_interactions.custom": "Modpack provided",
     "ei_plugin.extended_interactions.builtin": "Extended Interactions Builtins",
-    "ei_plugin.extended_interactions.patchouli": "EI Patchouli Compatibility"
+    "ei_plugin.extended_interactions.patchouli": "EI Patchouli Compatibility",
+    "ei_plugin.extended_interactions.oracle_index": "EI Oracle Index Compatibility"
 }

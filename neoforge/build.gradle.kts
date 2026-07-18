@@ -17,6 +17,7 @@ neoForge {
 stonecutter {
     dependencies["neoforge"] = commonMod.prop("neoForgeVersion")
     constants["mafglib"] = commonMod.prop("mafglib") != "NONE"
+    constants["mekanism"] = commonMod.prop("mekanism") != "NONE"
 }
 
 dependencies {
@@ -32,6 +33,9 @@ dependencies {
     }
     if (commonMod.prop("neoforgeArchAPI") != "NONE") {
         runtimeOnly("maven.modrinth:lhGA9TYQ:${commonMod.prop("neoforgeArchAPI")}")
+    }
+    if (commonMod.prop("mekanism") != "NONE") {
+        implementation("maven.modrinth:Ce6I4WUE:${commonMod.prop("mekanism")}")
     }
 }
 
